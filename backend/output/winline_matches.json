@@ -1,0 +1,162 @@
+[
+  {
+    "date_time": "19.04.25 17:00",
+    "home_team": "Эвертон",
+    "away_team": "Манчестер Сити",
+    "home_odds": "3.80",
+    "draw_odds": "3.65",
+    "away_odds": "1.95"
+  },
+  {
+    "date_time": "19.04.25 17:00",
+    "home_team": "Вест Хэм",
+    "away_team": "Саутгемптон",
+    "home_odds": "1.50",
+    "draw_odds": "4.50",
+    "away_odds": "6.20"
+  },
+  {
+    "date_time": "19.04.25 17:00",
+    "home_team": "Брентфорд",
+    "away_team": "Брайтон",
+    "home_odds": "2.46",
+    "draw_odds": "3.60",
+    "away_odds": "2.75"
+  },
+  {
+    "date_time": "19.04.25 17:00",
+    "home_team": "Кристал Пэлас",
+    "away_team": "Борнмут",
+    "home_odds": "2.60",
+    "draw_odds": "3.45",
+    "away_odds": "2.65"
+  },
+  {
+    "date_time": "19.04.25 19:30",
+    "home_team": "Астон Вилла",
+    "away_team": "Ньюкасл",
+    "home_odds": "2.39",
+    "draw_odds": "3.65",
+    "away_odds": "2.80"
+  },
+  {
+    "date_time": "20.04.25 16:00",
+    "home_team": "Фулхэм",
+    "away_team": "Челси",
+    "home_odds": "2.80",
+    "draw_odds": "3.45",
+    "away_odds": "2.39"
+  },
+  {
+    "date_time": "20.04.25 16:00",
+    "home_team": "Манчестер Юнайтед",
+    "away_team": "Вулверхэмптон",
+    "home_odds": "1.99",
+    "draw_odds": "3.50",
+    "away_odds": "3.55"
+  },
+  {
+    "date_time": "20.04.25 16:00",
+    "home_team": "Ипсвич Таун",
+    "away_team": "Арсенал",
+    "home_odds": "7.40",
+    "draw_odds": "4.70",
+    "away_odds": "1.39"
+  },
+  {
+    "date_time": "20.04.25 18:30",
+    "home_team": "Лестер Сити",
+    "away_team": "Ливерпуль",
+    "home_odds": "11.0",
+    "draw_odds": "6.20",
+    "away_odds": "1.22"
+  },
+  {
+    "date_time": "21.04.25 22:00",
+    "home_team": "Тоттенхэм",
+    "away_team": "Ноттингем Форест",
+    "home_odds": "2.42",
+    "draw_odds": "3.65",
+    "away_odds": "2.60"
+  },
+  {
+    "date_time": "22.04.25 22:00",
+    "home_team": "Манчестер Сити",
+    "away_team": "Астон Вилла",
+    "home_odds": "1.73",
+    "draw_odds": "4.09",
+    "away_odds": "4.00"
+  },
+  {
+    "date_time": "23.04.25 22:00",
+    "home_team": "Арсенал",
+    "away_team": "Кристал Пэлас",
+    "home_odds": "1.47",
+    "draw_odds": "4.30",
+    "away_odds": "6.40"
+  },
+  {
+    "date_time": "26.04.25 14:30",
+    "home_team": "Челси",
+    "away_team": "Эвертон",
+    "home_odds": "1.69",
+    "draw_odds": "3.70",
+    "away_odds": "4.80"
+  },
+  {
+    "date_time": "26.04.25 17:00",
+    "home_team": "Брайтон",
+    "away_team": "Вест Хэм",
+    "home_odds": "1.63",
+    "draw_odds": "4.00",
+    "away_odds": "4.80"
+  },
+  {
+    "date_time": "26.04.25 17:00",
+    "home_team": "Вулверхэмптон",
+    "away_team": "Лестер Сити",
+    "home_odds": "1.60",
+    "draw_odds": "3.95",
+    "away_odds": "5.20"
+  },
+  {
+    "date_time": "26.04.25 17:00",
+    "home_team": "Саутгемптон",
+    "away_team": "Фулхэм",
+    "home_odds": "5.00",
+    "draw_odds": "4.09",
+    "away_odds": "1.60"
+  },
+  {
+    "date_time": "26.04.25 17:00",
+    "home_team": "Ньюкасл",
+    "away_team": "Ипсвич Таун",
+    "home_odds": "1.24",
+    "draw_odds": "6.00",
+    "away_odds": "10.0"
+  },
+  {
+    "date_time": "27.04.25 16:00",
+    "home_team": "Борнмут",
+    "away_team": "Манчестер Юнайтед",
+    "home_odds": "1.98",
+    "draw_odds": "3.70",
+    "away_odds": "3.40"
+  },
+  {
+    "date_time": "27.04.25 18:30",
+    "home_team": "Ливерпуль",
+    "away_team": "Тоттенхэм",
+    "home_odds": "1.34",
+    "draw_odds": "5.60",
+    "away_odds": "7.00"
+  },
+  {
+    "date_time": "01.05.25 21:30",
+    "home_team": "Ноттингем Форест",
+    "away_team": "Брентфорд",
+    "home_odds": "2.17",
+    "draw_odds": "3.55",
+    "away_odds": "3.05"
+  }
+]
