@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_file
 from flask_cors import CORS
 from datetime import datetime
 from kickform_parser import parse_kickform_data, save_kickform_data
@@ -12,6 +12,8 @@ from winline_parser import parse_winline_data
 import os
 import json
 import glob
+import pandas as pd
+from io import BytesIO
 
 app = Flask(__name__)
 CORS(app)
@@ -129,6 +131,89 @@ def update_winline():
         return jsonify({"status": "success", "message": "Данные Winline успешно обновлены"})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
+
+@app.route('/api/export-excel', methods=['GET'])
+def export_excel():
+    country = request.args.get('country', 'all')
+    
+    # Загружаем данные о матчах
+    matches_punterspage = load_all_kickform_data()
+    
+    # Фильтруем по стране, если указана конкретная страна
+    if country != 'all':
+        matches_punterspage = [match for match in matches_punterspage if match.get('country') == country]
+    
+    # Загружаем данные с Winline
+    matches_winline = load_all_winline_data()
+    
+    # Объединяем данные
+    for match in matches_punterspage:
+        matching_winline_match = find_matching_match_by_teams(match, matches_winline)
+        if matching_winline_match:
+            match["home_odds"] = matching_winline_match.get("home_odds", "")
+            match["draw_odds"] = matching_winline_match.get("draw_odds", "")
+            match["away_odds"] = matching_winline_match.get("away_odds", "")
+    
+    # Создаем DataFrame
+    df = pd.DataFrame(matches_punterspage)
+    
+    # Создаем Excel файл в памяти
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        df.to_excel(writer, sheet_name='Matches', index=False)
+    
+    output.seek(0)
+    
+    # Отправляем файл
+    return send_file(
+        output,
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        as_attachment=True,
+        download_name=f'matches_{country}_{datetime.now().strftime("%Y%m%d_%H%M%S")}.xlsx'
+    )
+
+@app.route('/api/export-predictions-excel', methods=['GET'])
+def export_predictions_excel():
+    country = request.args.get('country', 'all')
+    
+    # Загружаем данные о матчах
+    matches_punterspage = load_all_kickform_data()
+    
+    # Фильтруем по стране, если указана конкретная страна
+    if country != 'all':
+        matches_punterspage = [match for match in matches_punterspage if match.get('country') == country]
+    
+    # Загружаем данные с Winline
+    matches_winline = load_all_winline_data()
+    
+    # Объединяем данные
+    for match in matches_punterspage:
+        matching_winline_match = find_matching_match_by_teams(match, matches_winline)
+        if matching_winline_match:
+            match["home_odds"] = matching_winline_match.get("home_odds", "")
+            match["draw_odds"] = matching_winline_match.get("draw_odds", "")
+            match["away_odds"] = matching_winline_match.get("away_odds", "")
+    
+    # Обрабатываем данные с помощью функции predict_bets
+    predictions = process_predictions(matches_punterspage)
+    
+    # Создаем DataFrame
+    df = pd.DataFrame(predictions)
+    
+    # Создаем Excel файл в памяти
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        df.to_excel(writer, sheet_name='Predictions', index=False)
+    
+    output.seek(0)
+    
+    # Отправляем файл
+    return send_file(
+        output,
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        as_attachment=True,
+        download_name=f'predictions_{country}_{datetime.now().strftime("%Y%m%d_%H%M%S")}.xlsx'
+    )
 
 if __name__ == '__main__':
     app.run(debug=True) 

@@ -29,6 +29,7 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime'
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents'
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows'
 import TrendingUpIcon from '@mui/icons-material/TrendingUp'
+import DownloadIcon from '@mui/icons-material/Download'
 
 interface MatchData {
   id: number;
@@ -407,6 +408,44 @@ function App() {
     }
   }
 
+  const handleCountryChange = (event: SelectChangeEvent) => {
+    setSelectedCountry(event.target.value)
+  }
+
+  const handleExportExcel = async () => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/export-excel?country=${selectedCountry}`)
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `matches_${selectedCountry}_${new Date().toISOString().slice(0,19).replace(/[:-]/g, '')}.xlsx`
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+    } catch (error) {
+      console.error('Error exporting to Excel:', error)
+    }
+  }
+
+  const handleExportPredictionsExcel = async () => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/export-predictions-excel?country=${selectedCountry}`)
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `predictions_${selectedCountry}_${new Date().toISOString().slice(0,19).replace(/[:-]/g, '')}.xlsx`
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+    } catch (error) {
+      console.error('Error exporting predictions to Excel:', error)
+    }
+  }
+
   const matchColumns: GridColDef[] = [
     { field: 'date', headerName: 'Дата', width: 100 },
     { field: 'time', headerName: 'Время', width: 100 },
@@ -638,7 +677,7 @@ function App() {
                   value={selectedCountry}
                   label="Страна"
                   size="small"
-                  onChange={(event) => setSelectedCountry(event.target.value)}
+                  onChange={handleCountryChange}
                 >
                   {COUNTRIES.map((country) => (
                     <MenuItem key={country.code} value={country.code}>
@@ -747,6 +786,23 @@ function App() {
             {snackbar.message}
           </Alert>
         </Snackbar>
+
+        <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
+          <Button
+            variant="outlined"
+            onClick={handleExportExcel}
+            startIcon={<DownloadIcon />}
+          >
+            Выгрузить матчи в Excel
+          </Button>
+          <Button
+            variant="outlined"
+            onClick={handleExportPredictionsExcel}
+            startIcon={<DownloadIcon />}
+          >
+            Выгрузить предсказания в Excel
+          </Button>
+        </Box>
       </Box>
     </Container>
   )
