@@ -9,7 +9,7 @@ def kelly_bet(bankroll, odds, confidence, fraction=3):
     bet = f_star * (1 / fraction) * bankroll
     return max(0, min(bet, bankroll))  # ставка не может превышать bankroll
 
-def predict_bets(df_odds_conf, initial_bankroll=10000, fraction=2, min_bankroll=100):
+def predict_bets(df_odds_conf, initial_bankroll=10000, fraction=3, min_bankroll=100):
     """
     df_odds_conf: Dataframe
     initial_bankroll: капитал

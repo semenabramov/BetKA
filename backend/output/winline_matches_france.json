@@ -1,14 +1,6 @@
 [
   {
-    "date_time": "Завтра 21:45",
-    "home_team": "Ренн",
-    "away_team": "Нант",
-    "home_odds": "1.82",
-    "draw_odds": "3.70",
-    "away_odds": "4.40"
-  },
-  {
-    "date_time": "19.04.25 18:00",
+    "date_time": "Сегодня 18:00",
     "home_team": "ПСЖ",
     "away_team": "Гавр",
     "home_odds": "1.14",
@@ -16,60 +8,60 @@
     "away_odds": "15.0"
   },
   {
-    "date_time": "19.04.25 20:00",
+    "date_time": "Сегодня 20:00",
     "home_team": "Монако",
     "away_team": "Страсбур",
-    "home_odds": "1.57",
+    "home_odds": "1.54",
     "draw_odds": "4.70",
-    "away_odds": "5.00"
+    "away_odds": "5.20"
   },
   {
-    "date_time": "19.04.25 22:05",
+    "date_time": "Сегодня 22:05",
     "home_team": "Марсель",
     "away_team": "Монпелье",
-    "home_odds": "1.22",
-    "draw_odds": "7.00",
-    "away_odds": "12.0"
+    "home_odds": "1.18",
+    "draw_odds": "7.60",
+    "away_odds": "14.0"
   },
   {
-    "date_time": "20.04.25 16:00",
+    "date_time": "Завтра 16:00",
     "home_team": "Лилль",
     "away_team": "Осер",
-    "home_odds": "1.49",
-    "draw_odds": "4.20",
-    "away_odds": "6.20"
+    "home_odds": "1.48",
+    "draw_odds": "4.50",
+    "away_odds": "6.80"
   },
   {
-    "date_time": "20.04.25 18:15",
+    "date_time": "Завтра 18:15",
     "home_team": "Ницца",
     "away_team": "Анже",
-    "home_odds": "1.38",
-    "draw_odds": "4.80",
-    "away_odds": "7.40"
+    "home_odds": "1.36",
+    "draw_odds": "5.20",
+    "away_odds": "8.60"
   },
   {
-    "date_time": "20.04.25 18:15",
+    "date_time": "Завтра 18:15",
     "home_team": "Брест",
     "away_team": "Ланс",
-    "home_odds": "2.31",
-    "draw_odds": "3.35",
-    "away_odds": "2.95"
+    "home_odds": "2.35",
+    "draw_odds": "3.40",
+    "away_odds": "3.00"
   },
   {
-    "date_time": "20.04.25 18:15",
+    "date_time": "Завтра 18:15",
     "home_team": "Реймс",
     "away_team": "Тулуза",
-    "home_odds": "3.20",
-    "draw_odds": "3.25",
-    "away_odds": "2.22"
+    "home_odds": "3.25",
+    "draw_odds": "3.30",
+    "away_odds": "2.25"
   },
   {
-    "date_time": "20.04.25 21:45",
+    "date_time": "Завтра 21:45",
     "home_team": "Сент-Этьен",
     "away_team": "Лион",
     "home_odds": "4.59",
-    "draw_odds": "4.30",
-    "away_odds": "1.61"
+    "draw_odds": "4.40",
+    "away_odds": "1.66"
   },
   {
     "date_time": "22.04.25 21:45",
@@ -83,9 +75,9 @@
     "date_time": "25.04.25 21:45",
     "home_team": "ПСЖ",
     "away_team": "Ницца",
-    "home_odds": "1.36",
-    "draw_odds": "5.40",
-    "away_odds": "6.80"
+    "home_odds": "1.43",
+    "draw_odds": "4.90",
+    "away_odds": "6.00"
   },
   {
     "date_time": "26.04.25 18:00",
@@ -93,7 +85,7 @@
     "away_team": "Сент-Этьен",
     "home_odds": "1.59",
     "draw_odds": "4.30",
-    "away_odds": "4.70"
+    "away_odds": "4.80"
   },
   {
     "date_time": "26.04.25 20:00",
@@ -107,7 +99,7 @@
     "date_time": "26.04.25 22:05",
     "home_team": "Лион",
     "away_team": "Ренн",
-    "home_odds": "1.73",
+    "home_odds": "1.74",
     "draw_odds": "4.00",
     "away_odds": "4.09"
   },
@@ -123,9 +115,9 @@
     "date_time": "27.04.25 18:15",
     "home_team": "Монпелье",
     "away_team": "Реймс",
-    "home_odds": "3.00",
+    "home_odds": "3.10",
     "draw_odds": "3.50",
-    "away_odds": "2.21"
+    "away_odds": "2.15"
   },
   {
     "date_time": "27.04.25 18:15",
@@ -141,7 +133,7 @@
     "away_team": "Тулуза",
     "home_odds": "3.10",
     "draw_odds": "3.30",
-    "away_odds": "2.27"
+    "away_odds": "2.25"
   },
   {
     "date_time": "27.04.25 21:45",

@@ -1,86 +1,94 @@
 [
   {
-    "date_time": "19.04.25 16:00",
+    "date_time": "Сегодня 16:00",
     "home_team": "Лечче",
     "away_team": "Комо",
-    "home_odds": "3.65",
-    "draw_odds": "3.40",
-    "away_odds": "2.08"
+    "home_odds": "3.45",
+    "draw_odds": "3.30",
+    "away_odds": "2.18"
   },
   {
-    "date_time": "19.04.25 19:00",
+    "date_time": "Сегодня 19:00",
     "home_team": "Монца",
     "away_team": "Наполи",
-    "home_odds": "12.0",
-    "draw_odds": "5.60",
-    "away_odds": "1.27"
+    "home_odds": "10.0",
+    "draw_odds": "5.40",
+    "away_odds": "1.30"
   },
   {
-    "date_time": "19.04.25 21:45",
+    "date_time": "Сегодня 21:45",
     "home_team": "Рома",
     "away_team": "Верона",
-    "home_odds": "1.40",
-    "draw_odds": "4.59",
-    "away_odds": "8.40"
+    "home_odds": "1.48",
+    "draw_odds": "4.20",
+    "away_odds": "7.20"
   },
   {
-    "date_time": "20.04.25 16:00",
+    "date_time": "Завтра 16:00",
     "home_team": "Эмполи",
     "away_team": "Венеция",
-    "home_odds": "2.24",
-    "draw_odds": "3.00",
-    "away_odds": "3.45"
+    "home_odds": "2.27",
+    "draw_odds": "3.05",
+    "away_odds": "3.55"
   },
   {
-    "date_time": "20.04.25 19:00",
+    "date_time": "Завтра 19:00",
     "home_team": "Болонья",
     "away_team": "Интер М",
     "home_odds": "3.25",
-    "draw_odds": "3.10",
-    "away_odds": "2.27"
+    "draw_odds": "3.15",
+    "away_odds": "2.35"
   },
   {
-    "date_time": "20.04.25 21:45",
+    "date_time": "Завтра 21:45",
     "home_team": "Милан",
     "away_team": "Аталанта",
-    "home_odds": "2.48",
-    "draw_odds": "3.40",
-    "away_odds": "2.70"
+    "home_odds": "2.60",
+    "draw_odds": "3.50",
+    "away_odds": "2.65"
   },
   {
     "date_time": "21.04.25 13:30",
     "home_team": "Торино",
     "away_team": "Удинезе",
-    "home_odds": "2.38",
-    "draw_odds": "2.90",
-    "away_odds": "3.30"
+    "home_odds": "2.42",
+    "draw_odds": "2.95",
+    "away_odds": "3.40"
   },
   {
     "date_time": "21.04.25 16:00",
     "home_team": "Кальяри",
     "away_team": "Фиорентина",
-    "home_odds": "3.00",
-    "draw_odds": "3.05",
-    "away_odds": "2.43"
+    "home_odds": "3.05",
+    "draw_odds": "3.15",
+    "away_odds": "2.47"
   },
   {
     "date_time": "21.04.25 19:00",
     "home_team": "Дженоа",
     "away_team": "Лацио",
-    "home_odds": "3.35",
-    "draw_odds": "3.10",
-    "away_odds": "2.21"
+    "home_odds": "3.40",
+    "draw_odds": "3.15",
+    "away_odds": "2.27"
   },
   {
     "date_time": "21.04.25 21:45",
     "home_team": "Парма",
     "away_team": "Ювентус",
-    "home_odds": "4.59",
-    "draw_odds": "3.55",
-    "away_odds": "1.75"
+    "home_odds": "4.70",
+    "draw_odds": "3.65",
+    "away_odds": "1.78"
   },
   {
-    "date_time": "27.04.25 16:00",
+    "date_time": "26.04.25 16:00",
+    "home_team": "Комо",
+    "away_team": "Дженоа",
+    "home_odds": "1.99",
+    "draw_odds": "3.20",
+    "away_odds": "3.95"
+  },
+  {
+    "date_time": "26.04.25 19:00",
     "home_team": "Интер М",
     "away_team": "Рома",
     "home_odds": "1.70",
@@ -88,36 +96,20 @@
     "away_odds": "4.70"
   },
   {
-    "date_time": "27.04.25 16:00",
+    "date_time": "26.04.25 21:45",
     "home_team": "Лацио",
     "away_team": "Парма",
-    "home_odds": "1.54",
+    "home_odds": "1.53",
     "draw_odds": "4.20",
     "away_odds": "5.40"
   },
   {
-    "date_time": "27.04.25 16:00",
+    "date_time": "27.04.25 13:30",
     "home_team": "Венеция",
     "away_team": "Милан",
     "home_odds": "4.70",
     "draw_odds": "4.00",
     "away_odds": "1.65"
-  },
-  {
-    "date_time": "27.04.25 16:00",
-    "home_team": "Ювентус",
-    "away_team": "Монца",
-    "home_odds": "1.19",
-    "draw_odds": "6.40",
-    "away_odds": "14.0"
-  },
-  {
-    "date_time": "27.04.25 16:00",
-    "home_team": "Наполи",
-    "away_team": "Торино",
-    "home_odds": "1.49",
-    "draw_odds": "4.09",
-    "away_odds": "6.60"
   },
   {
     "date_time": "27.04.25 16:00",
@@ -131,12 +123,28 @@
     "date_time": "27.04.25 16:00",
     "home_team": "Фиорентина",
     "away_team": "Эмполи",
-    "home_odds": "1.66",
-    "draw_odds": "3.65",
-    "away_odds": "5.20"
+    "home_odds": "1.68",
+    "draw_odds": "3.60",
+    "away_odds": "5.00"
   },
   {
-    "date_time": "27.04.25 16:00",
+    "date_time": "27.04.25 19:00",
+    "home_team": "Ювентус",
+    "away_team": "Монца",
+    "home_odds": "1.19",
+    "draw_odds": "6.40",
+    "away_odds": "14.0"
+  },
+  {
+    "date_time": "27.04.25 21:45",
+    "home_team": "Наполи",
+    "away_team": "Торино",
+    "home_odds": "1.49",
+    "draw_odds": "4.09",
+    "away_odds": "6.60"
+  },
+  {
+    "date_time": "28.04.25 19:30",
     "home_team": "Удинезе",
     "away_team": "Болонья",
     "home_odds": "4.09",
@@ -144,19 +152,11 @@
     "away_odds": "1.93"
   },
   {
-    "date_time": "27.04.25 16:00",
+    "date_time": "28.04.25 21:45",
     "home_team": "Верона",
     "away_team": "Кальяри",
     "home_odds": "2.48",
     "draw_odds": "3.00",
     "away_odds": "3.00"
-  },
-  {
-    "date_time": "27.04.25 16:00",
-    "home_team": "Комо",
-    "away_team": "Дженоа",
-    "home_odds": "1.95",
-    "draw_odds": "3.20",
-    "away_odds": "4.09"
   }
 ]

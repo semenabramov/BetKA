@@ -1,75 +1,75 @@
 [
   {
-    "date_time": "19.04.25 16:30",
+    "date_time": "Сегодня 16:30",
     "home_team": "Хайденхайм",
     "away_team": "Бавария",
-    "home_odds": "9.00",
-    "draw_odds": "6.20",
-    "away_odds": "1.29"
+    "home_odds": "8.00",
+    "draw_odds": "6.00",
+    "away_odds": "1.32"
   },
   {
-    "date_time": "19.04.25 16:30",
+    "date_time": "Сегодня 16:30",
     "home_team": "РБ Лейпциг",
     "away_team": "Хольштайн Киль",
-    "home_odds": "1.32",
-    "draw_odds": "5.80",
-    "away_odds": "8.19"
+    "home_odds": "1.40",
+    "draw_odds": "5.40",
+    "away_odds": "6.80"
   },
   {
-    "date_time": "19.04.25 16:30",
+    "date_time": "Сегодня 16:30",
     "home_team": "Фрайбург",
     "away_team": "Хоффенхайм",
-    "home_odds": "1.94",
-    "draw_odds": "3.75",
+    "home_odds": "1.91",
+    "draw_odds": "3.85",
     "away_odds": "3.75"
   },
   {
-    "date_time": "19.04.25 16:30",
+    "date_time": "Сегодня 16:30",
     "home_team": "Майнц",
     "away_team": "Вольфсбург",
-    "home_odds": "2.04",
-    "draw_odds": "3.65",
+    "home_odds": "2.06",
+    "draw_odds": "3.60",
     "away_odds": "3.50"
   },
   {
-    "date_time": "19.04.25 16:30",
+    "date_time": "Сегодня 16:30",
     "home_team": "Вердер Бремен",
     "away_team": "Бохум",
-    "home_odds": "1.74",
-    "draw_odds": "4.09",
-    "away_odds": "4.30"
+    "home_odds": "1.57",
+    "draw_odds": "4.50",
+    "away_odds": "5.20"
   },
   {
-    "date_time": "19.04.25 19:30",
+    "date_time": "Сегодня 19:30",
     "home_team": "Унион Берлин",
     "away_team": "Штутгарт",
-    "home_odds": "2.80",
-    "draw_odds": "3.45",
-    "away_odds": "2.46"
+    "home_odds": "2.85",
+    "draw_odds": "3.40",
+    "away_odds": "2.47"
   },
   {
-    "date_time": "20.04.25 16:30",
+    "date_time": "Завтра 16:30",
     "home_team": "Аугсбург",
     "away_team": "Айнтрахт Ф",
-    "home_odds": "2.50",
-    "draw_odds": "3.30",
-    "away_odds": "2.70"
+    "home_odds": "2.54",
+    "draw_odds": "3.40",
+    "away_odds": "2.75"
   },
   {
-    "date_time": "20.04.25 18:30",
+    "date_time": "Завтра 18:30",
     "home_team": "Боруссия Д",
     "away_team": "Боруссия М",
-    "home_odds": "1.40",
-    "draw_odds": "5.20",
-    "away_odds": "6.20"
+    "home_odds": "1.42",
+    "draw_odds": "5.40",
+    "away_odds": "6.40"
   },
   {
-    "date_time": "20.04.25 20:30",
+    "date_time": "Завтра 20:30",
     "home_team": "Санкт-Паули",
     "away_team": "Байер Л",
-    "home_odds": "4.90",
-    "draw_odds": "3.75",
-    "away_odds": "1.67"
+    "home_odds": "5.00",
+    "draw_odds": "3.80",
+    "away_odds": "1.70"
   },
   {
     "date_time": "25.04.25 21:30",
@@ -115,15 +115,15 @@
     "date_time": "26.04.25 16:30",
     "home_team": "Хольштайн Киль",
     "away_team": "Боруссия М",
-    "home_odds": "2.90",
+    "home_odds": "2.85",
     "draw_odds": "3.80",
-    "away_odds": "2.17"
+    "away_odds": "2.19"
   },
   {
     "date_time": "26.04.25 19:30",
     "home_team": "Айнтрахт Ф",
     "away_team": "РБ Лейпциг",
-    "home_odds": "2.45",
+    "home_odds": "2.43",
     "draw_odds": "3.70",
     "away_odds": "2.54"
   },
