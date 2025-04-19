@@ -1,6 +1,6 @@
 {
   "country": "france",
-  "last_updated": "2025-04-19T13:54:24.973246",
+  "last_updated": "2025-04-19T14:20:48.850990",
   "matches": [
     {
       "date": "19.04.2025",
@@ -20,7 +20,7 @@
       "date": "19.04.2025",
       "time": "19:00",
       "home": "Монако",
-      "away": "Страсбург",
+      "away": "Страсбур",
       "home_percent": 57,
       "draw_percent": 17,
       "away_percent": 26,

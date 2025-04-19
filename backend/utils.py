@@ -37,20 +37,21 @@ def load_winline_data(country='england'):
         print(f"Ошибка при загрузке данных из JSON: {e}")
         return []
 
-def find_matching_match_by_teams(punterspage_match, winline_matches):
+def find_matching_match_by_teams(match, matches_winline):
     """
-    Ищет соответствующий матч в данных Winline по названиям команд
+    Находит соответствующий матч в данных Winline по названиям команд
     """
-    home_team_punterspage = punterspage_match["home"].lower()
-    away_team_punterspage = punterspage_match["away"].lower()
+    home_team = match.get('home', '')
+    away_team = match.get('away', '')
     
-    for winline_match in winline_matches:
-        home_team_winline = winline_match["home_team"].lower()
-        away_team_winline = winline_match["away_team"].lower()
+    for winline_match in matches_winline:
+        # Проверяем разные форматы данных
+        winline_home = winline_match.get('home_team', '').lower()
+        winline_away = winline_match.get('away_team', '').lower()
         
-        # Проверяем, содержат ли названия команд друг друга
-        if (home_team_punterspage in home_team_winline or home_team_winline in home_team_punterspage) and \
-           (away_team_punterspage in away_team_winline or away_team_winline in away_team_punterspage):
+        # Проверяем совпадение команд (без учета регистра)
+        if (home_team.lower() == winline_home.lower() and 
+            away_team.lower() == winline_away.lower()):
             return winline_match
     
     return None
@@ -91,7 +92,7 @@ def prepare_data_for_prediction(matches):
     
     return prediction_data
 
-def process_predictions(matches,initial_bankroll, fraction, min_bankroll):
+def process_predictions(matches,initial_bankroll=10000, fraction=3, min_bankroll=100):
     """
     Обрабатывает данные с помощью функции predict_bets
     """

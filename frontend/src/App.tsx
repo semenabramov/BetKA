@@ -61,6 +61,7 @@ interface PredictionData {
 
 // Список доступных стран
 const COUNTRIES = [
+  { code: 'all', name: 'Все страны' },
   { code: 'england', name: 'Англия' },
   { code: 'spain', name: 'Испания' },
   { code: 'germany', name: 'Германия' },
@@ -308,7 +309,7 @@ function App() {
     message: '',
     severity: 'success'
   })
-  const [selectedCountry, setSelectedCountry] = useState('england')
+  const [selectedCountry, setSelectedCountry] = useState('all')
 
   // Параметры для расчета ставок
   const [initialBankroll, setInitialBankroll] = useState<number>(10000)

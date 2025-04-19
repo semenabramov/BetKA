@@ -1,11 +1,11 @@
 {
   "country": "england",
-  "last_updated": "2025-04-19T13:54:19.924958",
+  "last_updated": "2025-04-19T14:20:43.796665",
   "matches": [
     {
       "date": "19.04.2025",
       "time": "16:00",
-      "home": "Вест Хэм Юнайтед",
+      "home": "Вест Хэм",
       "away": "Саутгемптон",
       "home_percent": 62,
       "draw_percent": 20,
@@ -20,7 +20,7 @@
       "date": "19.04.2025",
       "time": "16:00",
       "home": "Брентфорд",
-      "away": "Брайтон энд Хоув Альбион",
+      "away": "Брайтон",
       "home_percent": 33,
       "draw_percent": 21,
       "away_percent": 46,
@@ -62,7 +62,7 @@
       "date": "19.04.2025",
       "time": "18:30",
       "home": "Астон Вилла",
-      "away": "Ньюкасл Юнайтед",
+      "away": "Ньюкасл",
       "home_percent": 46,
       "draw_percent": 19,
       "away_percent": 35,
@@ -131,7 +131,7 @@
     {
       "date": "21.04.2025",
       "time": "21:00",
-      "home": "Тоттенхэм Хотспур",
+      "home": "Тоттенхэм",
       "away": "Ноттингем Форест",
       "home_percent": 57,
       "draw_percent": 19,

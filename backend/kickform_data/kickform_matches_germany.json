@@ -1,6 +1,6 @@
 {
   "country": "germany",
-  "last_updated": "2025-04-19T13:54:22.433142",
+  "last_updated": "2025-04-19T14:20:46.334841",
   "matches": [
     {
       "date": "19.04.2025",
@@ -47,7 +47,7 @@
     {
       "date": "19.04.2025",
       "time": "15:30",
-      "home": "Вердер",
+      "home": "Вердер Бремен",
       "away": "Бохум",
       "home_percent": 69,
       "draw_percent": 18,
@@ -90,7 +90,7 @@
       "date": "20.04.2025",
       "time": "15:30",
       "home": "Аугсбург",
-      "away": "Айнтрахт Франкфурт",
+      "away": "Айнтрахт Ф",
       "home_percent": 36,
       "draw_percent": 20,
       "away_percent": 44,
