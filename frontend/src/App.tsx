@@ -311,6 +311,8 @@ function App() {
     severity: 'success'
   })
   const [selectedCountry, setSelectedCountry] = useState('all')
+  const [totalBetAmount, setTotalBetAmount] = useState(0)
+  const [totalPossibleProfit, setTotalPossibleProfit] = useState(0)
 
   // Параметры для расчета ставок
   const [initialBankroll, setInitialBankroll] = useState<number>(10000)
@@ -344,6 +346,13 @@ function App() {
       
       setMatches(matchesWithIds)
       setPredictions(predictionsWithIds)
+      
+      // Рассчитываем суммы
+      const totalBet = predictionsWithIds.reduce((sum, prediction) => sum + prediction.bet_amount, 0)
+      const totalProfit = predictionsWithIds.reduce((sum, prediction) => sum + prediction.possible_profit, 0)
+      
+      setTotalBetAmount(totalBet)
+      setTotalPossibleProfit(totalProfit)
     } catch (err) {
       setError('Ошибка при загрузке данных')
       console.error('Error fetching data:', err)
@@ -803,6 +812,23 @@ function App() {
             Выгрузить предсказания в Excel
           </Button>
         </Box>
+
+        {predictions.length > 0 && (
+          <Box sx={{ mt: 4 }}>
+            <Typography variant="h5" component="h2" gutterBottom>
+              Предсказания
+            </Typography>
+            
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2, p: 2, bgcolor: 'background.paper', borderRadius: 1 }}>
+              <Typography variant="h6">
+                Общая сумма ставок: <span style={{ color: '#f44336', fontWeight: 'bold' }}>{totalBetAmount.toFixed(2)} ₽</span>
+              </Typography>
+              <Typography variant="h6">
+                Общий возможный выигрыш: <span style={{ color: '#4caf50', fontWeight: 'bold' }}>{totalPossibleProfit.toFixed(2)} ₽</span>
+              </Typography>
+            </Box>
+          </Box>
+        )}
       </Box>
     </Container>
   )

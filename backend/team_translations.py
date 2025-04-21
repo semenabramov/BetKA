@@ -30,10 +30,10 @@ TEAM_TRANSLATIONS = {
 
     # Бундеслига
     "Bayern Munich": "Бавария",
-    "Bayer Leverkusen": "Байер Леверкузен",
+    "Bayer Leverkusen": "Байер Л",
     "VfB Stuttgart": "Штутгарт",
     "RB Leipzig": "РБ Лейпциг",
-    "Borussia Dortmund": "Боруссия Дортмунд",
+    "Borussia Dortmund": "Боруссия Д",
     "Eintracht Frankfurt": "Айнтрахт Ф",
     "TSG Hoffenheim": "Хоффенхайм",
     "SC Freiburg": "Фрайбург",
@@ -52,7 +52,7 @@ TEAM_TRANSLATIONS = {
     "FC Bayern München": "Бавария",
     "FC Bayern": "Бавария",
     "St. Pauli": "Санкт-Паули",
-    "Bayer 04 Leverkusen": "Байер Леверкузен",
+    "Bayer 04 Leverkusen": "Байер Л",
     
     
 
@@ -87,6 +87,7 @@ TEAM_TRANSLATIONS = {
     "Atlético Madrid": "Атлетико М",
     "Barcelona": "Барселона",
     "Betis": "Бетис",
+    "Real Betis": "Бетис",
     "Valencia": "Валенсия",
     "Villarreal": "Вильярреал",
     "Girona": "Жирона",
@@ -95,8 +96,8 @@ TEAM_TRANSLATIONS = {
     "Mallorca": "Мальорка",
     "Osasuna": "Осасуна",
     "Rayo Vallecano": "Райо Вальекано",
-    "Real Valladolid": "Реал Вальядолид",
-    "Real Madrid": "Реал Мадрид",
+    "Real Valladolid": "Вальядолид",
+    "Real Madrid": "Реал М",
     "Real Sociedad": "Реал Сосьедад",
     "Sevilla": "Севилья",
     "Celta de Vigo": "Сельта",

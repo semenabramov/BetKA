@@ -1,6 +1,6 @@
 {
   "country": "germany",
-  "last_updated": "2025-04-19T14:20:46.334841",
+  "last_updated": "2025-04-19T14:57:54.632886",
   "matches": [
     {
       "date": "19.04.2025",
@@ -103,7 +103,7 @@
     {
       "date": "20.04.2025",
       "time": "17:30",
-      "home": "Боруссия Дортмунд",
+      "home": "Боруссия Д",
       "away": "Боруссия М",
       "home_percent": 62,
       "draw_percent": 17,
@@ -118,7 +118,7 @@
       "date": "20.04.2025",
       "time": "19:30",
       "home": "Санкт-Паули",
-      "away": "Байер Леверкузен",
+      "away": "Байер Л",
       "home_percent": 11,
       "draw_percent": 13,
       "away_percent": 76,
