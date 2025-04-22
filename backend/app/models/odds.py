@@ -1,7 +1,7 @@
 from app.core.database import db
 
 class OddsFromKickform(db.Model):
-    __tablename__ = 'Odds_from_kickform'
+    __tablename__ = 'odds_from_kickform'
     
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     match_id = db.Column(db.Integer, db.ForeignKey('Matches.id'), nullable=False)
@@ -23,7 +23,7 @@ class BookmakerOdds(db.Model):
     
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     match_id = db.Column(db.Integer, db.ForeignKey('Matches.id'), nullable=False)
-    bookmaker_id = db.Column(db.Integer, db.ForeignKey('Bookmakers.id'), nullable=False)
+    bookmaker_id = db.Column(db.Integer, db.ForeignKey('bookmakers.id'), nullable=False)
     odds_home = db.Column(db.Float)
     odds_away = db.Column(db.Float)
     odds_draw = db.Column(db.Float)

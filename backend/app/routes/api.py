@@ -3,6 +3,8 @@ from app.core.database import db
 from app.services.match_service import MatchService
 from app.services.alias_service import AliasService
 from sqlalchemy import text
+from app.models.bookmaker import Bookmaker
+from app.models.team import Team
 
 bp = Blueprint('api', __name__)
 
@@ -181,4 +183,124 @@ def delete_team_alias(alias_id):
         return jsonify({
             'status': 'error',
             'message': 'Failed to delete alias'
-        }), 400 
+        }), 400
+
+@bp.route('/bookmakers', methods=['GET'])
+def get_bookmakers():
+    """Получение списка всех букмекеров"""
+    bookmakers = Bookmaker.query.all()
+    return jsonify({
+        'status': 'success',
+        'data': [bookmaker.to_dict() for bookmaker in bookmakers]
+    })
+
+@bp.route('/bookmakers', methods=['POST'])
+def create_bookmaker():
+    """Создание нового букмекера"""
+    try:
+        data = request.get_json()
+        bookmaker = Bookmaker(
+            name=data['name'],
+            premier_league_url=data.get('premier_league_url'),
+            championship_url=data.get('championship_url'),
+            league_one_url=data.get('league_one_url'),
+            league_two_url=data.get('league_two_url'),
+            bundesliga_one_url=data.get('bundesliga_one_url'),
+            bundesliga_two_url=data.get('bundesliga_two_url'),
+            liga_url=data.get('liga_url'),
+            la_liga_url=data.get('la_liga_url'),
+            serie_a_url=data.get('serie_a_url'),
+            ligue_one_url=data.get('ligue_one_url')
+        )
+        
+        db.session.add(bookmaker)
+        db.session.commit()
+        
+        return jsonify({
+            'status': 'success',
+            'message': 'Bookmaker created successfully',
+            'data': bookmaker.to_dict()
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+
+@bp.route('/bookmakers/<int:bookmaker_id>', methods=['PUT'])
+def update_bookmaker(bookmaker_id):
+    """Обновление букмекера"""
+    try:
+        bookmaker = Bookmaker.query.get_or_404(bookmaker_id)
+        data = request.get_json()
+        
+        bookmaker.name = data.get('name', bookmaker.name)
+        bookmaker.premier_league_url = data.get('premier_league_url', bookmaker.premier_league_url)
+        bookmaker.championship_url = data.get('championship_url', bookmaker.championship_url)
+        bookmaker.league_one_url = data.get('league_one_url', bookmaker.league_one_url)
+        bookmaker.league_two_url = data.get('league_two_url', bookmaker.league_two_url)
+        bookmaker.bundesliga_one_url = data.get('bundesliga_one_url', bookmaker.bundesliga_one_url)
+        bookmaker.bundesliga_two_url = data.get('bundesliga_two_url', bookmaker.bundesliga_two_url)
+        bookmaker.liga_url = data.get('liga_url', bookmaker.liga_url)
+        bookmaker.la_liga_url = data.get('la_liga_url', bookmaker.la_liga_url)
+        bookmaker.serie_a_url = data.get('serie_a_url', bookmaker.serie_a_url)
+        bookmaker.ligue_one_url = data.get('ligue_one_url', bookmaker.ligue_one_url)
+        
+        db.session.commit()
+        
+        return jsonify({
+            'status': 'success',
+            'message': 'Bookmaker updated successfully',
+            'data': bookmaker.to_dict()
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+
+@bp.route('/bookmakers/<int:bookmaker_id>', methods=['DELETE'])
+def delete_bookmaker(bookmaker_id):
+    """Удаление букмекера"""
+    try:
+        bookmaker = Bookmaker.query.get_or_404(bookmaker_id)
+        db.session.delete(bookmaker)
+        db.session.commit()
+        
+        return jsonify({
+            'status': 'success',
+            'message': 'Bookmaker deleted successfully'
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+
+@bp.route('/teams/<int:team_id>', methods=['DELETE'])
+def delete_team(team_id):
+    """Удаление команды"""
+    try:
+        team = Team.query.get(team_id)
+        if not team:
+            return jsonify({
+                'status': 'error',
+                'message': 'Team not found'
+            }), 404
+        
+        db.session.delete(team)
+        db.session.commit()
+        
+        return jsonify({
+            'status': 'success',
+            'message': 'Team deleted successfully'
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500 
