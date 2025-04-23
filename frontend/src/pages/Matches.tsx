@@ -1,5 +1,6 @@
 import React from 'react';
 import { Typography, Box } from '@mui/material';
+import MatchesList from '../components/MatchesList';
 
 const Matches: React.FC = () => {
   return (
@@ -7,9 +8,7 @@ const Matches: React.FC = () => {
       <Typography variant="h4" gutterBottom>
         Матчи
       </Typography>
-      <Typography variant="body1">
-        Здесь будет список матчей
-      </Typography>
+      <MatchesList />
     </Box>
   );
 };

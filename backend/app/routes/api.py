@@ -36,12 +36,9 @@ def db_check():
 
 @bp.route('/matches', methods=['GET'])
 def get_matches():
-    """Получение списка всех матчей"""
+    """Получение списка всех матчей с коэффициентами"""
     matches = MatchService.get_all_matches()
-    return jsonify({
-        'status': 'success',
-        'data': [match.to_dict() for match in matches]
-    })
+    return jsonify(matches)
 
 @bp.route('/matches', methods=['POST'])
 def create_match():

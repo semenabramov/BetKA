@@ -4,6 +4,8 @@ from app.models.match import Match
 from app.models.team import Team
 from app.models.odds import OddsFromSource, BookmakerOdds
 from app.core.database import db
+from app.models.bookmaker import Bookmaker
+from app.models.odds_source import OddsSource
 
 class MatchService:
     @staticmethod
@@ -53,7 +55,9 @@ class MatchService:
     
     @staticmethod
     def get_all_matches() -> List[Match]:
-        return Match.query.all()
+        """Получает все матчи с коэффициентами"""
+        matches = Match.query.order_by(Match.date.desc()).all()
+        return [MatchService.get_match_with_odds(match.id) for match in matches]
     
     @staticmethod
     def update_match(match_id: int, data: dict) -> Optional[Match]:
@@ -89,8 +93,25 @@ class MatchService:
             return None
             
         result = match.to_dict()
-        result['source_odds'] = [odd.to_dict() for odd in match.source_odds]
-        result['bookmaker_odds'] = [odd.to_dict() for odd in match.bookmaker_odds]
+        
+        # Добавляем коэффициенты от букмекеров с их названиями
+        result['bookmaker_odds'] = []
+        for odd in match.bookmaker_odds:
+            bookmaker = Bookmaker.query.get(odd.bookmaker_id)
+            odd_dict = odd.to_dict()
+            if bookmaker:
+                odd_dict['bookmaker_name'] = bookmaker.name
+            result['bookmaker_odds'].append(odd_dict)
+            
+        # Добавляем коэффициенты от источников с их названиями
+        result['source_odds'] = []
+        for odd in match.source_odds:
+            source = OddsSource.query.get(odd.sources_id)
+            odd_dict = odd.to_dict()
+            if source:
+                odd_dict['source_name'] = source.name
+            result['source_odds'].append(odd_dict)
+            
         return result
     
     @staticmethod
