@@ -410,20 +410,20 @@ def delete_match(match_id):
         db.session.rollback()
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
-@bp.route('/matches/update', methods=['POST'])
-def update_matches():
-    """Запускает процесс парсинга матчей с активных источников"""
+@bp.route('/matches/update-all', methods=['POST'])
+def update_all_matches():
+    """Запускает процесс парсинга матчей со всех источников и букмекеров, объединяет результаты и сохраняет в JSON"""
     try:
-        # Запускаем парсинг матчей
-        result = ParserService.parse_matches_from_source()
+        result = ParserService.parse_and_save_all_matches()
         
         if result['status'] == 'success':
-            # Если парсинг успешен, сохраняем матчи в базу данных
-            # Здесь можно добавить логику сохранения, если нужно
-            
             return jsonify({
                 'status': 'success',
-                'message': result['message']
+                'message': result['message'],
+                'source_matches': result['source_matches'],
+                'bookmaker_matches': result['bookmaker_matches'],
+                'merged_matches': result['merged_matches'],
+                'merged_file': result['merged_file']
             })
         else:
             return jsonify({

@@ -131,27 +131,23 @@ const MatchesList: React.FC = () => {
     }
   };
 
-  const handleParseMatches = async () => {
+  const handleParseAllMatches = async () => {
     try {
       setParseLoading(true);
-      const response = await axios.post('/api/matches/update');
-      
+      const response = await axios.post('/api/matches/update-all');
       setSnackbar({
         open: true,
-        message: response.data.message,
-        severity: response.data.status === 'success' ? 'success' : 'error'
+        message: response.data.message || 'Матчи успешно спарсены и объединены',
+        severity: 'success'
       });
-      
-      if (response.data.status === 'success') {
-        fetchMatches();
-      }
+      await fetchMatches();
     } catch (err) {
       setSnackbar({
         open: true,
-        message: 'Ошибка при парсинге матчей',
+        message: 'Ошибка при парсинге и объединении матчей',
         severity: 'error'
       });
-      console.error(err);
+      console.error('Error parsing and merging matches:', err);
     } finally {
       setParseLoading(false);
     }
@@ -267,7 +263,7 @@ const MatchesList: React.FC = () => {
         <ButtonGroup variant="contained" color="primary">
           <Button
             startIcon={<DownloadIcon />}
-            onClick={handleParseMatches}
+            onClick={handleParseAllMatches}
             disabled={parseLoading}
           >
             {parseLoading ? 'Парсинг...' : 'Парсить матчи'}
