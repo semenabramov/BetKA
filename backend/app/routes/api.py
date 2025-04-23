@@ -7,6 +7,7 @@ from app.models.bookmaker import Bookmaker
 from app.models.team import Team
 from app.services.odds_source_service import OddsSourceService
 from app.services.odds_service import OddsService
+from app.models.odds import BookmakerOdds
 
 bp = Blueprint('api', __name__)
 
@@ -265,17 +266,22 @@ def delete_bookmaker(bookmaker_id):
     """Удаление букмекера"""
     try:
         bookmaker = Bookmaker.query.get_or_404(bookmaker_id)
+        
+        # Сначала удаляем все связанные записи из таблицы Bookmakers_odds
+        BookmakerOdds.query.filter_by(bookmaker_id=bookmaker_id).delete()
+        
+        # Теперь можно удалить самого букмекера
         db.session.delete(bookmaker)
         db.session.commit()
         
         return jsonify({
-            'status': 'success',
-            'message': 'Bookmaker deleted successfully'
+            'success': True,
+            'message': 'Букмекер успешно удален'
         })
     except Exception as e:
         db.session.rollback()
         return jsonify({
-            'status': 'error',
+            'success': False,
             'message': str(e)
         }), 500
 
