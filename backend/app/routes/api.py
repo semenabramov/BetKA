@@ -10,6 +10,7 @@ from app.services.odds_service import OddsService
 from app.models.odds import BookmakerOdds
 from app.models.odds import OddsFromSource
 from app.models.match import Match
+from app.services.parser_service import ParserService
 
 bp = Blueprint('api', __name__)
 
@@ -407,4 +408,31 @@ def delete_match(match_id):
         return jsonify({'status': 'success', 'message': 'Матч успешно удален'})
     except Exception as e:
         db.session.rollback()
-        return jsonify({'status': 'error', 'message': str(e)}), 500 
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+@bp.route('/matches/update', methods=['POST'])
+def update_matches():
+    """Запускает процесс парсинга матчей с активных источников"""
+    try:
+        # Запускаем парсинг матчей
+        result = ParserService.parse_matches_from_source()
+        
+        if result['status'] == 'success':
+            # Если парсинг успешен, сохраняем матчи в базу данных
+            # Здесь можно добавить логику сохранения, если нужно
+            
+            return jsonify({
+                'status': 'success',
+                'message': result['message']
+            })
+        else:
+            return jsonify({
+                'status': 'error',
+                'message': result['message']
+            }), 500
+            
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'Ошибка при обновлении матчей: {str(e)}'
+        }), 500 

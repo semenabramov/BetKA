@@ -54,7 +54,9 @@ class OddsSource(db.Model):
             'la_liga_url': self.la_liga_url,
             'serie_a_url': self.serie_a_url,
             'ligue_one_url': self.ligue_one_url,
-            'is_active': self.is_active
+            'is_active': self.is_active,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None
         }
     
     def __repr__(self):

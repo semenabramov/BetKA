@@ -20,10 +20,12 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
-  Divider
+  Divider,
+  ButtonGroup
 } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import DeleteIcon from '@mui/icons-material/Delete';
+import DownloadIcon from '@mui/icons-material/Download';
 import axios from 'axios';
 
 interface Match {
@@ -54,6 +56,7 @@ const MatchesList: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [updateLoading, setUpdateLoading] = useState(false);
+  const [parseLoading, setParseLoading] = useState(false);
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
     message: string;
@@ -125,6 +128,32 @@ const MatchesList: React.FC = () => {
       console.error(err);
     } finally {
       setUpdateLoading(false);
+    }
+  };
+
+  const handleParseMatches = async () => {
+    try {
+      setParseLoading(true);
+      const response = await axios.post('/api/matches/update');
+      
+      setSnackbar({
+        open: true,
+        message: response.data.message,
+        severity: response.data.status === 'success' ? 'success' : 'error'
+      });
+      
+      if (response.data.status === 'success') {
+        fetchMatches();
+      }
+    } catch (err) {
+      setSnackbar({
+        open: true,
+        message: 'Ошибка при парсинге матчей',
+        severity: 'error'
+      });
+      console.error(err);
+    } finally {
+      setParseLoading(false);
     }
   };
 
@@ -235,15 +264,22 @@ const MatchesList: React.FC = () => {
     <Box>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
         <Typography variant="h6">Матчи</Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<RefreshIcon />}
-          onClick={handleUpdateMatches}
-          disabled={updateLoading}
-        >
-          {updateLoading ? 'Обновление...' : 'Обновить данные'}
-        </Button>
+        <ButtonGroup variant="contained" color="primary">
+          <Button
+            startIcon={<DownloadIcon />}
+            onClick={handleParseMatches}
+            disabled={parseLoading}
+          >
+            {parseLoading ? 'Парсинг...' : 'Парсить матчи'}
+          </Button>
+          <Button
+            startIcon={<RefreshIcon />}
+            onClick={handleUpdateMatches}
+            disabled={updateLoading}
+          >
+            {updateLoading ? 'Обновление...' : 'Обновить данные'}
+          </Button>
+        </ButtonGroup>
       </Box>
       
       <TableContainer component={Paper}>
