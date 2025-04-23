@@ -6,6 +6,7 @@ from app.models.odds import OddsFromSource, BookmakerOdds
 from app.core.database import db
 from app.models.bookmaker import Bookmaker
 from app.models.odds_source import OddsSource
+from app.models.alias_team import AliasTeam
 
 class MatchService:
     @staticmethod
@@ -33,9 +34,19 @@ class MatchService:
             return None
 
     @staticmethod
-    def get_all_teams() -> List[Team]:
-        """Получает все команды"""
-        return Team.query.order_by(Team.name).all()
+    def get_all_teams() -> List[dict]:
+        """Получает все команды с их альтернативными названиями"""
+        teams = Team.query.order_by(Team.name).all()
+        result = []
+        
+        for team in teams:
+            team_dict = team.to_dict()
+            # Получаем альтернативные названия для команды
+            aliases = AliasTeam.query.filter_by(id_team=team.id).all()
+            team_dict['aliases'] = [alias.to_dict() for alias in aliases]
+            result.append(team_dict)
+            
+        return result
 
     @staticmethod
     def create_match(data: dict) -> Match:

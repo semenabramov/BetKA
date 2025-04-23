@@ -43,7 +43,7 @@ const CreateTeam: React.FC<CreateTeamProps> = ({ open, onClose }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/api/teams', teamData);
+      const response = await axios.post('/api/teams', teamData);
       setMessage({ type: 'success', text: 'Команда успешно создана!' });
       setTeamData({ name: '', league: 'Premier League' });
       setTimeout(() => {

@@ -124,11 +124,11 @@ def create_team():
 
 @bp.route('/teams', methods=['GET'])
 def get_teams():
-    """Получение списка всех команд"""
+    """Получение списка всех команд с альтернативными названиями"""
     teams = MatchService.get_all_teams()
     return jsonify({
         'status': 'success',
-        'data': [team.to_dict() for team in teams]
+        'data': teams
     })
 
 @bp.route('/teams/<int:team_id>/aliases', methods=['GET'])

@@ -69,7 +69,7 @@ const TeamAliases: React.FC<TeamAliasesProps> = ({ open, onClose }) => {
   const fetchTeams = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:5000/api/teams');
+      const response = await axios.get('/api/teams');
       setTeams(response.data.data || []);
     } catch (error) {
       setMessage({ 
@@ -84,7 +84,7 @@ const TeamAliases: React.FC<TeamAliasesProps> = ({ open, onClose }) => {
   const fetchAliases = async (teamId: number) => {
     try {
       setLoading(true);
-      const response = await axios.get(`http://localhost:5000/api/teams/${teamId}/aliases`);
+      const response = await axios.get(`/api/teams/${teamId}/aliases`);
       setAliases(response.data.data || []);
     } catch (error) {
       setMessage({ 
@@ -101,7 +101,7 @@ const TeamAliases: React.FC<TeamAliasesProps> = ({ open, onClose }) => {
     
     try {
       setLoading(true);
-      await axios.post(`http://localhost:5000/api/teams/${selectedTeam}/aliases`, {
+      await axios.post(`/api/teams/${selectedTeam}/aliases`, {
         alias: newAlias.trim(),
         language: language
       });
@@ -122,7 +122,7 @@ const TeamAliases: React.FC<TeamAliasesProps> = ({ open, onClose }) => {
   const handleDeleteAlias = async (aliasId: number) => {
     try {
       setLoading(true);
-      await axios.delete(`http://localhost:5000/api/teams/aliases/${aliasId}`);
+      await axios.delete(`/api/teams/aliases/${aliasId}`);
       if (typeof selectedTeam === 'number') {
         fetchAliases(selectedTeam);
       }

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import {
   Box,
   Paper,
@@ -9,20 +8,14 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  IconButton,
   Typography,
-  Alert,
-  Chip,
-  Tooltip
+  CircularProgress,
+  IconButton,
+  Tooltip,
+  Alert
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import InfoIcon from '@mui/icons-material/Info';
-
-interface Team {
-  id: number;
-  name: string;
-  league: string;
-}
+import axios from 'axios';
 
 interface Alias {
   id: number;
@@ -31,93 +24,71 @@ interface Alias {
   language: string;
 }
 
+interface Team {
+  id: number;
+  name: string;
+  league: string;
+  aliases: Alias[];
+}
+
 const TeamsList: React.FC = () => {
   const [teams, setTeams] = useState<Team[]>([]);
-  const [aliases, setAliases] = useState<Record<number, Alias[]>>({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
+    const fetchTeams = async () => {
+      try {
+        const response = await axios.get('/api/teams');
+        setTeams(response.data.data);
+        setLoading(false);
+      } catch (err) {
+        setError('Ошибка при загрузке команд');
+        setLoading(false);
+      }
+    };
+
     fetchTeams();
   }, []);
 
-  const fetchTeams = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get('http://localhost:5000/api/teams');
-      setTeams(response.data.data || []);
-      
-      // Загружаем альтернативные названия для каждой команды
-      const aliasesData: Record<number, Alias[]> = {};
-      for (const team of response.data.data) {
-        try {
-          const aliasResponse = await axios.get(`http://localhost:5000/api/teams/${team.id}/aliases`);
-          aliasesData[team.id] = aliasResponse.data.data || [];
-        } catch (error) {
-          console.error(`Error fetching aliases for team ${team.id}:`, error);
-          aliasesData[team.id] = [];
-        }
-      }
-      setAliases(aliasesData);
-    } catch (error) {
-      setMessage({ 
-        type: 'error', 
-        text: 'Ошибка при загрузке списка команд' 
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleDeleteTeam = async (teamId: number) => {
-    if (!window.confirm('Вы уверены, что хотите удалить эту команду? Это действие нельзя отменить.')) {
-      return;
-    }
-    
-    try {
-      setLoading(true);
-      await axios.delete(`http://localhost:5000/api/teams/${teamId}`);
-      setMessage({ type: 'success', text: 'Команда успешно удалена' });
-      fetchTeams(); // Обновляем список команд
-    } catch (error) {
-      setMessage({ 
-        type: 'error', 
-        text: 'Ошибка при удалении команды' 
-      });
-    } finally {
-      setLoading(false);
+    if (window.confirm('Вы уверены, что хотите удалить эту команду?')) {
+      try {
+        await axios.delete(`/api/teams/${teamId}`);
+        setTeams(teams.filter(team => team.id !== teamId));
+        setMessage({ type: 'success', text: 'Команда успешно удалена' });
+      } catch (err) {
+        setMessage({ type: 'error', text: 'Ошибка при удалении команды' });
+      }
     }
   };
 
-  const renderAliases = (teamId: number) => {
-    const teamAliases = aliases[teamId] || [];
-    if (teamAliases.length === 0) {
-      return '-';
-    }
-    
+
+  if (loading) {
     return (
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-        {teamAliases.map((alias) => (
-          <Chip 
-            key={alias.id} 
-            label={alias.alias} 
-            size="small" 
-            color={alias.language === 'ru' ? 'primary' : 'secondary'}
-            variant="outlined"
-          />
-        ))}
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
+        <CircularProgress />
       </Box>
     );
-  };
+  }
+
+  if (error) {
+    return (
+      <Box p={2}>
+        <Typography color="error">{error}</Typography>
+      </Box>
+    );
+  }
 
   return (
     <Box>
       {message && (
-        <Alert severity={message.type} sx={{ mb: 2 }}>
+        <Alert severity={message.type} sx={{ mb: 2 }} onClose={() => setMessage(null)}>
           {message.text}
         </Alert>
       )}
-
+      
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -125,7 +96,7 @@ const TeamsList: React.FC = () => {
               <TableCell>Название</TableCell>
               <TableCell>Лига</TableCell>
               <TableCell>Альтернативные названия</TableCell>
-              <TableCell>Действия</TableCell>
+              <TableCell align="center">Действия</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -133,14 +104,34 @@ const TeamsList: React.FC = () => {
               <TableRow key={team.id}>
                 <TableCell>{team.name}</TableCell>
                 <TableCell>{team.league}</TableCell>
-                <TableCell>{renderAliases(team.id)}</TableCell>
                 <TableCell>
+                  {team.aliases && team.aliases.length > 0 ? (
+                    <Box>
+                      {team.aliases.map((alias) => (
+                        <Box key={alias.id} sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                          <Typography 
+                            variant="body2" 
+                            sx={{ 
+                              backgroundColor: alias.language === 'ru' ? 'rgba(25, 118, 210, 0.1)' : 'rgba(46, 125, 50, 0.1)',
+                              padding: '2px 8px',
+                              borderRadius: '4px',
+                              display: 'inline-block'
+                            }}
+                          >
+                            {alias.alias}
+                          </Typography>
+                        </Box>
+                      ))}
+                    </Box>
+                  ) : (
+                    <Typography variant="body2" color="text.secondary">
+                      Нет альтернативных названий
+                    </Typography>
+                  )}
+                </TableCell>
+                <TableCell align="center">
                   <Tooltip title="Удалить команду">
-                    <IconButton 
-                      color="error" 
-                      onClick={() => handleDeleteTeam(team.id)}
-                      disabled={loading}
-                    >
+                    <IconButton onClick={() => handleDeleteTeam(team.id)}>
                       <DeleteIcon />
                     </IconButton>
                   </Tooltip>
