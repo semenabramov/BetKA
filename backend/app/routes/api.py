@@ -5,6 +5,8 @@ from app.services.alias_service import AliasService
 from sqlalchemy import text
 from app.models.bookmaker import Bookmaker
 from app.models.team import Team
+from app.services.odds_source_service import OddsSourceService
+from app.services.odds_service import OddsService
 
 bp = Blueprint('api', __name__)
 
@@ -303,4 +305,80 @@ def delete_team(team_id):
         return jsonify({
             'status': 'error',
             'message': str(e)
-        }), 500 
+        }), 500
+
+# Маршруты для источников коэффициентов
+@bp.route('/odds-sources', methods=['GET'])
+def get_odds_sources():
+    sources = OddsSourceService.get_all_sources()
+    return jsonify([source.to_dict() for source in sources])
+
+@bp.route('/odds-sources/<int:source_id>', methods=['GET'])
+def get_odds_source(source_id):
+    source = OddsSourceService.get_source_by_id(source_id)
+    if not source:
+        return jsonify({'error': 'Source not found'}), 404
+    return jsonify(source.to_dict())
+
+@bp.route('/odds-sources', methods=['POST'])
+def create_odds_source():
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'No data provided'}), 400
+            
+        required_fields = ['name', 'url']
+        for field in required_fields:
+            if field not in data:
+                return jsonify({'error': f'Missing required field: {field}'}), 400
+                
+        source = OddsSourceService.create_source(data)
+        return jsonify(source.to_dict()), 201
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@bp.route('/odds-sources/<int:source_id>', methods=['PUT'])
+def update_odds_source(source_id):
+    data = request.get_json()
+    source = OddsSourceService.update_source(source_id, data)
+    if not source:
+        return jsonify({'error': 'Source not found'}), 404
+    return jsonify(source.to_dict())
+
+@bp.route('/odds-sources/<int:source_id>', methods=['DELETE'])
+def delete_odds_source(source_id):
+    success = OddsSourceService.delete_source(source_id)
+    if not success:
+        return jsonify({'error': 'Source not found'}), 404
+    return '', 204
+
+# Маршруты для коэффициентов из источников
+@bp.route('/matches/<int:match_id>/source-odds', methods=['GET'])
+def get_match_source_odds(match_id):
+    odds = OddsService.get_odds_by_match_id(match_id)
+    return jsonify([odd.to_dict() for odd in odds])
+
+@bp.route('/matches/<int:match_id>/source-odds', methods=['POST'])
+def create_match_source_odds(match_id):
+    data = request.get_json()
+    source_id = data.get('source_id')
+    if not source_id:
+        return jsonify({'error': 'Source ID is required'}), 400
+        
+    odds = OddsService.create_source_odds(match_id, source_id, data)
+    return jsonify(odds.to_dict()), 201
+
+@bp.route('/source-odds/<int:odds_id>', methods=['PUT'])
+def update_match_source_odds(odds_id):
+    data = request.get_json()
+    odds = OddsService.update_source_odds(odds_id, data)
+    if not odds:
+        return jsonify({'error': 'Odds not found'}), 404
+    return jsonify(odds.to_dict())
+
+@bp.route('/source-odds/<int:odds_id>', methods=['DELETE'])
+def delete_match_source_odds(odds_id):
+    success = OddsService.delete_source_odds(odds_id)
+    if not success:
+        return jsonify({'error': 'Odds not found'}), 404
+    return '', 204 

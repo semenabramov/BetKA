@@ -2,7 +2,7 @@ from typing import Dict, Optional, List
 from datetime import datetime
 from app.models.match import Match
 from app.models.team import Team
-from app.models.odds import OddsFromKickform
+from app.models.odds import OddsFromSource, BookmakerOdds
 from app.core.database import db
 
 class MatchService:
@@ -36,54 +36,62 @@ class MatchService:
         return Team.query.order_by(Team.name).all()
 
     @staticmethod
-    def create_match(match_data: Dict) -> Optional[Match]:
-        """Создает новый матч в базе данных"""
-        try:
-            # Проверяем существование команд
-            home_team = Team.query.get(match_data['team_home'])
-            away_team = Team.query.get(match_data['team_away'])
-            
-            if not home_team or not away_team:
-                return None
-            
-            # Создаем матч
-            match = Match(
-                date=datetime.fromisoformat(match_data['date']),
-                team_home=match_data['team_home'],
-                team_away=match_data['team_away'],
-                split=match_data.get('split')
-            )
-            
-            db.session.add(match)
-            db.session.flush()  # Получаем id матча
-            
-            # Если есть коэффициенты от Kickform, добавляем их
-            if 'kickform_odds' in match_data:
-                odds = OddsFromKickform(
-                    match_id=match.id,
-                    odds_home=match_data['kickform_odds']['home'],
-                    odds_draw=match_data['kickform_odds']['draw'],
-                    odds_away=match_data['kickform_odds']['away']
-                )
-                db.session.add(odds)
-            
-            db.session.commit()
-            return match
-            
-        except Exception as e:
-            db.session.rollback()
-            print(f"Error creating match: {str(e)}")
-            return None
+    def create_match(data: dict) -> Match:
+        match = Match(
+            date=data['date'],
+            team_home=data['team_home'],
+            team_away=data['team_away'],
+            split=data.get('split')
+        )
+        db.session.add(match)
+        db.session.commit()
+        return match
     
     @staticmethod
-    def get_match(match_id: int) -> Optional[Match]:
-        """Получает матч по id"""
+    def get_match_by_id(match_id: int) -> Optional[Match]:
         return Match.query.get(match_id)
     
     @staticmethod
-    def get_all_matches() -> list:
-        """Получает все матчи"""
-        return Match.query.order_by(Match.date.desc()).all()
+    def get_all_matches() -> List[Match]:
+        return Match.query.all()
+    
+    @staticmethod
+    def update_match(match_id: int, data: dict) -> Optional[Match]:
+        match = Match.query.get(match_id)
+        if not match:
+            return None
+            
+        for key, value in data.items():
+            if hasattr(match, key):
+                setattr(match, key, value)
+                
+        db.session.commit()
+        return match
+    
+    @staticmethod
+    def delete_match(match_id: int) -> bool:
+        match = Match.query.get(match_id)
+        if not match:
+            return False
+            
+        # Удаляем связанные коэффициенты
+        OddsFromSource.query.filter_by(match_id=match_id).delete()
+        BookmakerOdds.query.filter_by(match_id=match_id).delete()
+        
+        db.session.delete(match)
+        db.session.commit()
+        return True
+    
+    @staticmethod
+    def get_match_with_odds(match_id: int) -> Optional[dict]:
+        match = Match.query.get(match_id)
+        if not match:
+            return None
+            
+        result = match.to_dict()
+        result['source_odds'] = [odd.to_dict() for odd in match.source_odds]
+        result['bookmaker_odds'] = [odd.to_dict() for odd in match.bookmaker_odds]
+        return result
     
     @staticmethod
     def create_mock_match() -> Optional[Match]:
@@ -106,7 +114,7 @@ class MatchService:
             'date': datetime.now().isoformat(),
             'team_home': home_team.id,
             'team_away': away_team.id,
-            'kickform_odds': {
+            'source_odds': {
                 'home': 2.1,
                 'draw': 3.4,
                 'away': 3.2

@@ -10,7 +10,7 @@ class Match(db.Model):
     split = db.Column(db.Integer, db.ForeignKey('Splits.id'))
     
     # Связи
-    kickform_odds = db.relationship('OddsFromKickform', backref='match', lazy=True, uselist=False)
+    source_odds = db.relationship('OddsFromSource', backref='match', lazy=True, uselist=False)
     bookmaker_odds = db.relationship('BookmakerOdds', backref='match', lazy=True)
     split_matches = db.relationship('SplitMatch', backref='match', lazy=True)
     
