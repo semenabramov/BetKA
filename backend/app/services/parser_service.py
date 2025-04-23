@@ -9,6 +9,7 @@ from app.models.match import Match
 from app.models.team import Team
 from app.models.odds import OddsFromSource
 from sqlalchemy import or_
+from app.models.alias_team import AliasTeam
 
 logger = logging.getLogger(__name__)
 
@@ -127,24 +128,43 @@ class ParserService:
             for card in match_cards:
                 try:
                     # Извлекаем названия команд
-                    home_team = card.select_one('.team.home .teamname').text.strip()
-                    away_team = card.select_one('.team.away .teamname').text.strip()
+                    home_team_name = card.select_one('.team.home .teamname').text.strip()
+                    away_team_name = card.select_one('.team.away .teamname').text.strip()
+                    
+                    # Ищем команды в базе данных
+                    home_team = Team.query.filter(
+                        or_(
+                            Team.name == home_team_name,
+                            Team.aliases.any(AliasTeam.alias_name == home_team_name)
+                        )
+                    ).first()
+                    
+                    away_team = Team.query.filter(
+                        or_(
+                            Team.name == away_team_name,
+                            Team.aliases.any(AliasTeam.alias_name == away_team_name)
+                        )
+                    ).first()
+                    
+                    if not home_team or not away_team:
+                        logger.warning(f"Не найдены команды: {home_team_name} или {away_team_name}")
+                        continue
                     
                     # Находим активную вкладку с коэффициентами
                     active_tab = card.select_one('.tab-pane.active')
                     if not active_tab:
-                        logger.warning(f"Не найдена активная вкладка для матча {home_team} vs {away_team}")
+                        logger.warning(f"Не найдена активная вкладка для матча {home_team_name} vs {away_team_name}")
                         continue
                         
                     # Извлекаем коэффициенты из активной вкладки
                     predict = active_tab.select_one('.predict')
                     if not predict:
-                        logger.warning(f"Не найдены коэффициенты для матча {home_team} vs {away_team}")
+                        logger.warning(f"Не найдены коэффициенты для матча {home_team_name} vs {away_team_name}")
                         continue
                         
                     odds_elements = predict.select('.prozent')
                     if len(odds_elements) != 3:
-                        logger.warning(f"Неверное количество коэффициентов для матча {home_team} vs {away_team}")
+                        logger.warning(f"Неверное количество коэффициентов для матча {home_team_name} vs {away_team_name}")
                         continue
                     
                     # Удаляем тег <small>%</small> и преобразуем в float
@@ -159,11 +179,11 @@ class ParserService:
                     # Преобразуем дату и время в datetime
                     match_date = datetime.strptime(f"{date_str} {time_str}", '%d.%m.%Y %H:%M')
                     
-                    # Создаем объект матча
+                    # Создаем объект матча с ID команд
                     match_data = {
                         'date': match_date.isoformat(),
-                        'home_team_name': home_team,
-                        'away_team_name': away_team,
+                        'team_home': home_team.id,
+                        'team_away': away_team.id,
                         'odds': {
                             'home': odds_home,
                             'draw': odds_draw,
@@ -198,38 +218,19 @@ class ParserService:
             updated_odds = 0
             
             for match_data in matches_data:
-                # Ищем команды по названию
-                home_team = Team.query.filter(
-                    or_(
-                        Team.name == match_data['home_team_name'],
-                        Team.aliases.any(alias=match_data['home_team_name'])
-                    )
-                ).first()
-                
-                away_team = Team.query.filter(
-                    or_(
-                        Team.name == match_data['away_team_name'],
-                        Team.aliases.any(alias=match_data['away_team_name'])
-                    )
-                ).first()
-                
-                if not home_team or not away_team:
-                    logger.warning(f"Не найдены команды: {match_data['home_team_name']} или {match_data['away_team_name']}")
-                    continue
-                
-                # Ищем матч по дате и командам
+                # Ищем матч по дате и ID команд
                 match = Match.query.filter_by(
                     date=datetime.fromisoformat(match_data['date']),
-                    team_home=home_team.id,
-                    team_away=away_team.id
+                    team_home=match_data['team_home'],
+                    team_away=match_data['team_away']
                 ).first()
                 
                 if not match:
                     # Создаем новый матч
                     match = Match(
                         date=datetime.fromisoformat(match_data['date']),
-                        team_home=home_team.id,
-                        team_away=away_team.id
+                        team_home=match_data['team_home'],
+                        team_away=match_data['team_away']
                     )
                     db.session.add(match)
                     db.session.flush()  # Получаем ID матча
