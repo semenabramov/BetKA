@@ -10,8 +10,20 @@ import {
   TableRow,
   Typography,
   CircularProgress,
-  Tooltip
+  Button,
+  Alert,
+  Snackbar,
+  IconButton,
+  Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Divider
 } from '@mui/material';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import DeleteIcon from '@mui/icons-material/Delete';
 import axios from 'axios';
 
 interface Match {
@@ -41,19 +53,41 @@ const MatchesList: React.FC = () => {
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [updateLoading, setUpdateLoading] = useState(false);
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    severity: 'success' | 'error';
+  }>({
+    open: false,
+    message: '',
+    severity: 'success'
+  });
+  const [deleteDialog, setDeleteDialog] = useState<{
+    open: boolean;
+    matchId: number | null;
+    matchInfo: string;
+  }>({
+    open: false,
+    matchId: null,
+    matchInfo: ''
+  });
+
+  const fetchMatches = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get('/api/matches');
+      setMatches(response.data);
+      setError(null);
+    } catch (err) {
+      setError('Ошибка при загрузке матчей');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchMatches = async () => {
-      try {
-        const response = await axios.get('/api/matches');
-        setMatches(response.data);
-        setLoading(false);
-      } catch (err) {
-        setError('Ошибка при загрузке матчей');
-        setLoading(false);
-      }
-    };
-
     fetchMatches();
   }, []);
 
@@ -68,8 +102,74 @@ const MatchesList: React.FC = () => {
     });
   };
 
-  const renderOdds = (odds: number) => {
-    return odds ? odds.toFixed(2) : '-';
+  const handleUpdateMatches = async () => {
+    try {
+      setUpdateLoading(true);
+      const response = await axios.post('/api/matches/update');
+      
+      setSnackbar({
+        open: true,
+        message: response.data.message,
+        severity: response.data.status === 'success' ? 'success' : 'error'
+      });
+      
+      if (response.data.status === 'success') {
+        fetchMatches();
+      }
+    } catch (err) {
+      setSnackbar({
+        open: true,
+        message: 'Ошибка при обновлении матчей',
+        severity: 'error'
+      });
+      console.error(err);
+    } finally {
+      setUpdateLoading(false);
+    }
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar(prev => ({ ...prev, open: false }));
+  };
+
+  const handleDeleteClick = (matchId: number, homeTeam: string, awayTeam: string, matchDate: string) => {
+    setDeleteDialog({
+      open: true,
+      matchId,
+      matchInfo: `${homeTeam} - ${awayTeam} (${formatDate(matchDate)})`
+    });
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteDialog.matchId) return;
+    
+    try {
+      const response = await axios.delete(`/api/matches/${deleteDialog.matchId}`);
+      
+      setSnackbar({
+        open: true,
+        message: response.data.message,
+        severity: response.data.status === 'success' ? 'success' : 'error'
+      });
+      
+      // Обновляем список матчей после успешного удаления
+      if (response.data.status === 'success') {
+        fetchMatches();
+      }
+    } catch (err) {
+      setSnackbar({
+        open: true,
+        message: 'Ошибка при удалении матча',
+        severity: 'error'
+      });
+      console.error(err);
+    } finally {
+      setDeleteDialog({ open: false, matchId: null, matchInfo: '' });
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteDialog({ open: false, matchId: null, matchInfo: '' });
   };
 
   const renderOddsCell = (match: Match, type: 'home' | 'draw' | 'away') => {
@@ -84,24 +184,24 @@ const MatchesList: React.FC = () => {
     
     return (
       <Box>
-        {bookmakerOdds.map((odd, index) => (
-          <Box key={`bookmaker-${index}`} sx={{ mb: 1 }}>
-            <Typography variant="caption" color="text.secondary">
-              {odd.bookmaker_name || `Букмекер ${odd.bookmaker_id}`}:
-            </Typography>
-            <Typography component="span" sx={{ ml: 1 }}>
-              {renderOdds(getOddsValue(odd, type))}
-            </Typography>
-          </Box>
-        ))}
-        
         {sourceOdds.map((odd, index) => (
           <Box key={`source-${index}`} sx={{ mb: 1 }}>
             <Typography variant="caption" color="text.secondary">
               {odd.source_name || `Источник ${odd.sources_id}`}:
             </Typography>
             <Typography component="span" sx={{ ml: 1 }}>
-              {renderOdds(getOddsValue(odd, type))}
+              {getOddsValue(odd, type).toFixed(2)}
+            </Typography>
+          </Box>
+        ))}
+        
+        {bookmakerOdds.map((odd, index) => (
+          <Box key={`bookmaker-${index}`} sx={{ mb: 1 }}>
+            <Typography variant="caption" color="text.secondary">
+              {odd.bookmaker_name || `Букмекер ${odd.bookmaker_id}`}:
+            </Typography>
+            <Typography component="span" sx={{ ml: 1 }}>
+              {getOddsValue(odd, type).toFixed(2)}
             </Typography>
           </Box>
         ))}
@@ -132,32 +232,98 @@ const MatchesList: React.FC = () => {
   }
 
   return (
-    <TableContainer component={Paper}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Дата</TableCell>
-            <TableCell>Хозяева</TableCell>
-            <TableCell>Гости</TableCell>
-            <TableCell align="center">П1</TableCell>
-            <TableCell align="center">X</TableCell>
-            <TableCell align="center">П2</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {matches.map((match) => (
-            <TableRow key={match.id}>
-              <TableCell>{formatDate(match.date)}</TableCell>
-              <TableCell>{match.home_team_name}</TableCell>
-              <TableCell>{match.away_team_name}</TableCell>
-              <TableCell>{renderOddsCell(match, 'home')}</TableCell>
-              <TableCell>{renderOddsCell(match, 'draw')}</TableCell>
-              <TableCell>{renderOddsCell(match, 'away')}</TableCell>
+    <Box>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+        <Typography variant="h6">Матчи</Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<RefreshIcon />}
+          onClick={handleUpdateMatches}
+          disabled={updateLoading}
+        >
+          {updateLoading ? 'Обновление...' : 'Обновить данные'}
+        </Button>
+      </Box>
+      
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Дата</TableCell>
+              <TableCell>Команды</TableCell>
+              <TableCell align="center">П1</TableCell>
+              <TableCell align="center">X</TableCell>
+              <TableCell align="center">П2</TableCell>
+              <TableCell align="center">Действия</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+          </TableHead>
+          <TableBody>
+            {matches.map((match) => (
+              <TableRow key={match.id}>
+                <TableCell>{formatDate(match.date)}</TableCell>
+                <TableCell>{match.home_team_name} - {match.away_team_name}</TableCell>
+                <TableCell>{renderOddsCell(match, 'home')}</TableCell>
+                <TableCell>{renderOddsCell(match, 'draw')}</TableCell>
+                <TableCell>{renderOddsCell(match, 'away')}</TableCell>
+                <TableCell align="center">
+                  <Tooltip title="Удалить матч">
+                    <IconButton
+                      color="error"
+                      size="small"
+                      onClick={() => handleDeleteClick(match.id, match.home_team_name, match.away_team_name, match.date)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Tooltip>
+                </TableCell>
+              </TableRow>
+            ))}
+            {matches.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={6} align="center">
+                  <Typography variant="body1" sx={{ py: 2 }}>
+                    Нет доступных матчей
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+      
+      <Dialog
+        open={deleteDialog.open}
+        onClose={handleDeleteCancel}
+      >
+        <DialogTitle>Подтверждение удаления</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Вы уверены, что хотите удалить матч "{deleteDialog.matchInfo}"?
+            Это действие нельзя отменить.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteCancel} color="primary">
+            Отмена
+          </Button>
+          <Button onClick={handleDeleteConfirm} color="error" autoFocus>
+            Удалить
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
   );
 };
 

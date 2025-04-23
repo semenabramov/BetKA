@@ -8,6 +8,8 @@ from app.models.team import Team
 from app.services.odds_source_service import OddsSourceService
 from app.services.odds_service import OddsService
 from app.models.odds import BookmakerOdds
+from app.models.odds import OddsFromSource
+from app.models.match import Match
 
 bp = Blueprint('api', __name__)
 
@@ -384,4 +386,25 @@ def delete_match_source_odds(odds_id):
     success = OddsService.delete_source_odds(odds_id)
     if not success:
         return jsonify({'error': 'Odds not found'}), 404
-    return '', 204 
+    return '', 204
+
+@bp.route('/matches/<int:match_id>', methods=['DELETE'])
+def delete_match(match_id):
+    """Удаление матча по ID"""
+    try:
+        match = Match.query.get(match_id)
+        if not match:
+            return jsonify({'status': 'error', 'message': 'Матч не найден'}), 404
+        
+        # Удаляем связанные коэффициенты
+        OddsFromSource.query.filter_by(match_id=match_id).delete()
+        BookmakerOdds.query.filter_by(match_id=match_id).delete()
+        
+        # Удаляем сам матч
+        db.session.delete(match)
+        db.session.commit()
+        
+        return jsonify({'status': 'success', 'message': 'Матч успешно удален'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'status': 'error', 'message': str(e)}), 500 
