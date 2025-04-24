@@ -26,6 +26,7 @@ import {
 import RefreshIcon from '@mui/icons-material/Refresh';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DownloadIcon from '@mui/icons-material/Download';
+import CompareIcon from '@mui/icons-material/Compare';
 import axios from 'axios';
 
 interface Match {
@@ -60,11 +61,11 @@ const MatchesList: React.FC = () => {
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
     message: string;
-    severity: 'success' | 'error';
+    severity: 'success' | 'error' | 'info' | 'warning';
   }>({
     open: false,
     message: '',
-    severity: 'success'
+    severity: 'info'
   });
   const [deleteDialog, setDeleteDialog] = useState<{
     open: boolean;
@@ -260,7 +261,7 @@ const MatchesList: React.FC = () => {
     <Box>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
         <Typography variant="h6">Матчи</Typography>
-        <ButtonGroup variant="contained" color="primary">
+        
           <Button
             startIcon={<DownloadIcon />}
             onClick={handleParseAllMatches}
@@ -268,14 +269,8 @@ const MatchesList: React.FC = () => {
           >
             {parseLoading ? 'Парсинг...' : 'Парсить матчи'}
           </Button>
-          <Button
-            startIcon={<RefreshIcon />}
-            onClick={handleUpdateMatches}
-            disabled={updateLoading}
-          >
-            {updateLoading ? 'Обновление...' : 'Обновить данные'}
-          </Button>
-        </ButtonGroup>
+          
+        
       </Box>
       
       <TableContainer component={Paper}>

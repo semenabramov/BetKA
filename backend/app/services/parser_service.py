@@ -478,151 +478,7 @@ class ParserService:
             
         return matches
     
-    @staticmethod
-    def save_parsed_matches(matches_data, source_id):
-        """
-        Сохраняет спарсенные матчи в базу данных
-        
-        Args:
-            matches_data (list): Список матчей для сохранения
-            source_id (int): ID источника
-            
-        Returns:
-            dict: Результат сохранения
-        """
-        try:
-            saved_matches = 0
-            updated_odds = 0
-            
-            for match_data in matches_data:
-                # Ищем матч по дате и ID команд
-                match = Match.query.filter_by(
-                    date=datetime.fromisoformat(match_data['date']),
-                    team_home=match_data['team_home'],
-                    team_away=match_data['team_away']
-                ).first()
-                
-                if not match:
-                    # Создаем новый матч
-                    match = Match(
-                        date=datetime.fromisoformat(match_data['date']),
-                        team_home=match_data['team_home'],
-                        team_away=match_data['team_away']
-                    )
-                    db.session.add(match)
-                    db.session.flush()  # Получаем ID матча
-                    saved_matches += 1
-                
-                # Проверяем, есть ли уже коэффициенты от этого источника
-                odds = OddsFromSource.query.filter_by(
-                    match_id=match.id,
-                    sources_id=source_id
-                ).first()
-                
-                if odds:
-                    # Обновляем существующие коэффициенты
-                    odds.odds_home = match_data['odds']['home']
-                    odds.odds_draw = match_data['odds']['draw']
-                    odds.odds_away = match_data['odds']['away']
-                    updated_odds += 1
-                else:
-                    # Создаем новые коэффициенты
-                    odds = OddsFromSource(
-                        match_id=match.id,
-                        sources_id=source_id,
-                        odds_home=match_data['odds']['home'],
-                        odds_draw=match_data['odds']['draw'],
-                        odds_away=match_data['odds']['away']
-                    )
-                    db.session.add(odds)
-            
-            db.session.commit()
-            
-            return {
-                'status': 'success',
-                'message': f'Сохранено {saved_matches} новых матчей, обновлено {updated_odds} коэффициентов'
-            }
-            
-        except Exception as e:
-            db.session.rollback()
-            logger.error(f"Ошибка при сохранении матчей: {str(e)}")
-            return {
-                'status': 'error',
-                'message': f'Ошибка при сохранении матчей: {str(e)}'
-            }
-    
-    @staticmethod
-    def save_bookmaker_matches(matches_data, bookmaker_id):
-        """
-        Сохраняет спарсенные матчи букмекеров в базу данных
-        
-        Args:
-            matches_data (list): Список матчей для сохранения
-            bookmaker_id (int): ID букмекера
-            
-        Returns:
-            dict: Результат сохранения
-        """
-        try:
-            saved_matches = 0
-            updated_odds = 0
-            
-            for match_data in matches_data:
-                # Ищем соответствующий матч в базе данных
-                match = Match.query.filter_by(
-                    date=datetime.fromisoformat(match_data['date']),
-                    team_home=match_data['team_home'],
-                    team_away=match_data['team_away']
-                ).first()
-                
-                if not match:
-                    # Создаем новый матч
-                    match = Match(
-                        date=datetime.fromisoformat(match_data['date']),
-                        team_home=match_data['team_home'],
-                        team_away=match_data['team_away']
-                    )
-                    db.session.add(match)
-                    db.session.flush()  # Получаем ID матча
-                    saved_matches += 1
-                
-                # Проверяем, есть ли уже коэффициенты от этого букмекера
-                odds = BookmakerOdds.query.filter_by(
-                    match_id=match.id,
-                    bookmaker_id=bookmaker_id
-                ).first()
-                
-                if odds:
-                    # Обновляем существующие коэффициенты
-                    odds.odds_home = match_data['odds']['home']
-                    odds.odds_draw = match_data['odds']['draw']
-                    odds.odds_away = match_data['odds']['away']
-                    updated_odds += 1
-                else:
-                    # Создаем новые коэффициенты
-                    odds = BookmakerOdds(
-                        match_id=match.id,
-                        bookmaker_id=bookmaker_id,
-                        odds_home=match_data['odds']['home'],
-                        odds_draw=match_data['odds']['draw'],
-                        odds_away=match_data['odds']['away']
-                    )
-                    db.session.add(odds)
-            
-            db.session.commit()
-            
-            return {
-                'status': 'success',
-                'message': f'Сохранено {saved_matches} новых матчей, обновлено {updated_odds} коэффициентов'
-            }
-            
-        except Exception as e:
-            db.session.rollback()
-            logger.error(f"Ошибка при сохранении матчей: {str(e)}")
-            return {
-                'status': 'error',
-                'message': f'Ошибка при сохранении матчей: {str(e)}'
-            }
+   
     
     @staticmethod
     def compare_and_merge_matches(source_matches, bookmaker_matches):
@@ -716,13 +572,13 @@ class ParserService:
             logger.info(f"После фильтрации осталось {len(filtered_matches)} матчей, которые есть и в источниках, и у букмекеров")
             
             # Сохраняем объединенные матчи в JSON файл
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            merged_file = f"merged_matches_{timestamp}.json"
+            # timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            # merged_file = f"merged_matches_{timestamp}.json"
             
-            with open(merged_file, 'w', encoding='utf-8') as f:
-                json.dump(list(filtered_matches.values()), f, ensure_ascii=False, indent=2)
+            # with open(merged_file, 'w', encoding='utf-8') as f:
+            #     json.dump(list(filtered_matches.values()), f, ensure_ascii=False, indent=2)
                 
-            logger.info(f"Объединенные матчи сохранены в файл {merged_file}")
+            # logger.info(f"Объединенные матчи сохранены в файл {merged_file}")
             
             # Сохраняем объединенные матчи в базу данных
             db_result = ParserService.save_merged_matches_to_db(list(filtered_matches.values()))
@@ -731,7 +587,6 @@ class ParserService:
                 'status': 'success',
                 'message': f'Успешно объединено {len(filtered_matches)} матчей',
                 'merged_matches': len(filtered_matches),
-                'merged_file': merged_file,
                 'merged_data': list(filtered_matches.values()),
                 'db_result': db_result
             }
@@ -929,7 +784,6 @@ class ParserService:
                 'source_matches': source_result['matches_count'],
                 'bookmaker_matches': bookmaker_result['matches_count'],
                 'merged_matches': merge_result['merged_matches'],
-                'merged_file': merge_result['merged_file'],
                 'db_result': db_result
             }
             

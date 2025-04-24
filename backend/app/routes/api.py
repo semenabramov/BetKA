@@ -423,7 +423,6 @@ def update_all_matches():
                 'source_matches': result['source_matches'],
                 'bookmaker_matches': result['bookmaker_matches'],
                 'merged_matches': result['merged_matches'],
-                'merged_file': result['merged_file']
             })
         else:
             return jsonify({
