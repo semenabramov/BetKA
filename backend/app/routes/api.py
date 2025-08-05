@@ -11,6 +11,10 @@ from app.models.odds import BookmakerOdds
 from app.models.odds import OddsFromSource
 from app.models.match import Match
 from app.services.parser_service import ParserService
+from app.models.split import Split
+from datetime import datetime
+from app.services.match_result_parser import MatchResultParser
+from app.config.sources import MATCH_RESULT_SOURCES
 
 bp = Blueprint('api', __name__)
 
@@ -434,4 +438,215 @@ def update_all_matches():
         return jsonify({
             'status': 'error',
             'message': f'Ошибка при обновлении матчей: {str(e)}'
+        }), 500
+
+@bp.route('/splits', methods=['GET'])
+def get_splits():
+    """Получить список всех сплитов"""
+    try:
+        splits = Split.query.order_by(Split.date.desc()).all()
+        return jsonify({
+            'status': 'success',
+            'data': [split.to_dict() for split in splits]
+        })
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+
+@bp.route('/splits', methods=['POST'])
+def create_split():
+    """Создать новый сплит"""
+    try:
+        data = request.get_json()
+        
+        # Валидация обязательных полей
+        required_fields = ['name', 'Kelly_value', 'Bank', 'min_bet', 'selected_matches']
+        for field in required_fields:
+            if field not in data:
+                return jsonify({
+                    'status': 'error',
+                    'message': f'Отсутствует обязательное поле: {field}'
+                }), 400
+
+        # Создание нового сплита
+        split = Split(
+            name=data['name'],
+            Kelly_value=float(data['Kelly_value']),
+            Bank=float(data['Bank']),
+            min_bet=float(data['min_bet']),
+            status='active',
+            date=datetime.now()
+        )
+        
+        db.session.add(split)
+        db.session.flush()  # Получаем ID сплита до коммита
+        print(split.id)
+        print(data['selected_matches'])
+        # Обновляем выбранные матчи
+        for match_id in data['selected_matches']:
+            match = Match.query.get(match_id)
+            if match:
+                match.split = split.id
+
+        db.session.commit()
+        
+        return jsonify({
+            'status': 'success',
+            'message': 'Сплит успешно создан',
+            'data': split.to_dict()
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500 
+
+@bp.route('/matches/<int:match_id>/score', methods=['PUT'])
+def update_match_score(match_id):
+    """Обновление счета матча"""
+    try:
+        data = request.get_json()
+        match = Match.query.get(match_id)
+        
+        if not match:
+            return jsonify({
+                'status': 'error',
+                'message': 'Матч не найден'
+            }), 404
+        
+        # Валидация формата счета
+        score = data.get('score')
+        if score is not None:
+            # Проверяем формат "число:число"
+            import re
+            if not re.match(r'^\d+:\d+$', score):
+                return jsonify({
+                    'status': 'error',
+                    'message': 'Неверный формат счета. Используйте формат "2:1", "0:0" и т.д.'
+                }), 400
+        
+        # Обновляем счет матча
+        match.match_score = score
+        db.session.commit()
+        
+        return jsonify({
+            'status': 'success',
+            'message': 'Счет матча успешно обновлен',
+            'data': match.to_dict()
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+
+@bp.route('/matches/played', methods=['GET'])
+def get_played_matches():
+    """Получение сыгранных матчей (с непустым счетом)"""
+    try:
+        matches = Match.query.filter(
+            Match.match_score.isnot(None)
+        ).order_by(Match.date.desc()).all()
+        
+        return jsonify({
+            'status': 'success',
+            'data': [match.to_dict() for match in matches]
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+
+@bp.route('/matches/future', methods=['GET'])
+def get_future_matches():
+    """Получение будущих матчей (без счета)"""
+    try:
+        from datetime import datetime
+        now = datetime.now()
+        
+        matches = Match.query.filter(
+            Match.date > now,
+            Match.match_score.is_(None)
+        ).order_by(Match.date.asc()).all()
+        
+        return jsonify({
+            'status': 'success',
+            'data': [match.to_dict() for match in matches]
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500 
+
+@bp.route('/matches/update-all-scores', methods=['POST'])
+def update_all_match_scores():
+    """Обновление счета всех матчей"""
+    try:
+        print("=== НАЧАЛО ПАРСИНГА РЕЗУЛЬТАТОВ МАТЧЕЙ ===")
+        
+        all_parsed_matches = []
+        
+        for source in MATCH_RESULT_SOURCES:
+            print(f"\n--- Парсим источник: {source['name']} ---")
+            print(f"URL: {source['url']}")
+            print(f"Лига: {source['league']}")
+
+            parsed_matches = MatchResultParser.parse_championat_results(
+                url=source['url'],
+                league=source['league']
+            )
+
+            print(f"Распарсено матчей: {len(parsed_matches)}")
+            for i, match in enumerate(parsed_matches, 1):
+                print(f"  {i}. {match['home_team']} - {match['away_team']} | {match['date']} | {match['score']}")
+            
+            all_parsed_matches.extend(parsed_matches)
+            print(f"--- Завершен парсинг источника: {source['name']} ---\n")
+
+        print(f"=== ВСЕГО РАСПАРСЕНО МАТЧЕЙ: {len(all_parsed_matches)} ===")
+        
+        # Сопоставляем с базой данных и обновляем результаты
+        print("\n=== НАЧИНАЕМ СОПОСТАВЛЕНИЕ С БАЗОЙ ДАННЫХ ===")
+        stats = MatchResultParser.update_match_scores_in_database(all_parsed_matches)
+        
+        print(f"\n=== СТАТИСТИКА ОБНОВЛЕНИЯ ===")
+        print(f"Всего распарсено: {stats['total_parsed']}")
+        print(f"Найдено в БД: {stats['matched']}")
+        print(f"Обновлено: {stats['updated']}")
+        print(f"Не найдено: {stats['not_found']}")
+        print(f"Ошибок: {stats['errors']}")
+        
+        if stats['not_found'] > 0:
+            print(f"\n=== НЕ НАЙДЕННЫЕ МАТЧИ ===")
+            for detail in stats['details']:
+                if detail['status'] == 'not_found':
+                    print(f"- {detail['parsed_match']['home_team']} - {detail['parsed_match']['away_team']} {detail['parsed_match']['date']}")
+        
+        if stats['updated'] > 0:
+            print(f"\n=== ОБНОВЛЕННЫЕ МАТЧИ ===")
+            for detail in stats['details']:
+                if detail['status'] == 'updated':
+                    print(f"- Матч {detail['db_match_id']}: {detail['old_score']} -> {detail['new_score']}")
+
+        print("=== ПАРСИНГ РЕЗУЛЬТАТОВ ЗАВЕРШЕН ===")
+
+        return jsonify({
+            'status': 'success',
+            'message': f'Парсинг завершен. Обновлено {stats["updated"]} матчей из {stats["total_parsed"]} распарсенных.',
+            'stats': stats
+        })
+    except Exception as e:
+        print(f"Ошибка при парсинге результатов: {e}")
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
         }), 500 

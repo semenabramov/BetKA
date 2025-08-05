@@ -21,6 +21,7 @@ import Matches from './pages/Matches';
 import Teams from './pages/Teams';
 import Bookmakers from './pages/Bookmakers';
 import Sources from './pages/Sources';
+import SplitsList from './components/SplitsList';
 
 const App: React.FC = () => {
     const drawerWidth = 240;
@@ -73,6 +74,12 @@ const App: React.FC = () => {
                                 </ListItemIcon>
                                 <ListItemText primary="Ресурсы" />
                             </ListItem>
+                            <ListItem button component={Link} to="/splits">
+                                <ListItemIcon>
+                                    <AnalyticsIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Сплиты" />
+                            </ListItem>
                         </List>
                     </Box>
                 </Drawer>
@@ -84,6 +91,7 @@ const App: React.FC = () => {
                             <Route path="/teams" element={<Teams />} />
                             <Route path="/bookmakers" element={<Bookmakers />} />
                             <Route path="/sources" element={<Sources />} />
+                            <Route path="/splits" element={<SplitsList />} />
                         </Routes>
                     </Container>
                 </Box>
