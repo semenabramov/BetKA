@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import apiClient from '../config/axios';
+import { API_CONFIG } from '../config/api';
 import {
   Dialog,
   DialogTitle,
@@ -69,8 +70,9 @@ const TeamAliases: React.FC<TeamAliasesProps> = ({ open, onClose }) => {
   const fetchTeams = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/teams');
-      setTeams(response.data.data || []);
+      const response = await apiClient.get(API_CONFIG.ENDPOINTS.TEAMS);
+      const teamsData = response.data.data || response.data;
+      setTeams(teamsData);
     } catch (error) {
       setMessage({ 
         type: 'error', 
@@ -84,8 +86,9 @@ const TeamAliases: React.FC<TeamAliasesProps> = ({ open, onClose }) => {
   const fetchAliases = async (teamId: number) => {
     try {
       setLoading(true);
-      const response = await axios.get(`/api/teams/${teamId}/aliases`);
-      setAliases(response.data.data || []);
+      const response = await apiClient.get(`${API_CONFIG.ENDPOINTS.TEAMS}/${teamId}/aliases`);
+      const aliasesData = response.data.data || response.data;
+      setAliases(aliasesData);
     } catch (error) {
       setMessage({ 
         type: 'error', 
@@ -101,14 +104,18 @@ const TeamAliases: React.FC<TeamAliasesProps> = ({ open, onClose }) => {
     
     try {
       setLoading(true);
-      await axios.post(`/api/teams/${selectedTeam}/aliases`, {
+      await apiClient.post(`${API_CONFIG.ENDPOINTS.TEAMS}/${selectedTeam}/aliases`, {
         alias: newAlias.trim(),
         language: language
       });
       
+      setMessage({ 
+        type: 'success', 
+        text: 'Альтернативное название успешно добавлено' 
+      });
+      
       setNewAlias('');
       fetchAliases(selectedTeam);
-      setMessage({ type: 'success', text: 'Альтернативное название добавлено' });
     } catch (error) {
       setMessage({ 
         type: 'error', 
@@ -120,20 +127,27 @@ const TeamAliases: React.FC<TeamAliasesProps> = ({ open, onClose }) => {
   };
 
   const handleDeleteAlias = async (aliasId: number) => {
-    try {
-      setLoading(true);
-      await axios.delete(`/api/teams/aliases/${aliasId}`);
-      if (typeof selectedTeam === 'number') {
-        fetchAliases(selectedTeam);
+    if (window.confirm('Вы уверены, что хотите удалить это альтернативное название?')) {
+      try {
+        setLoading(true);
+        await apiClient.delete(`${API_CONFIG.ENDPOINTS.ALIASES}/${aliasId}`);
+        
+        setMessage({ 
+          type: 'success', 
+          text: 'Альтернативное название успешно удалено' 
+        });
+        
+        if (typeof selectedTeam === 'number') {
+          fetchAliases(selectedTeam);
+        }
+      } catch (error) {
+        setMessage({ 
+          type: 'error', 
+          text: 'Ошибка при удалении альтернативного названия' 
+        });
+      } finally {
+        setLoading(false);
       }
-      setMessage({ type: 'success', text: 'Альтернативное название удалено' });
-    } catch (error) {
-      setMessage({ 
-        type: 'error', 
-        text: 'Ошибка при удалении альтернативного названия' 
-      });
-    } finally {
-      setLoading(false);
     }
   };
 

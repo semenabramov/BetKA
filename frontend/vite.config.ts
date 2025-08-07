@@ -5,12 +5,13 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
-    proxy: {
-      '/api': {
-        target: 'https://betka.onrender.com',
-        changeOrigin: true,
-        secure: false,
-      }
-    }
+    // Прокси больше не нужен, так как используем прямые запросы к Render
+    // proxy: {
+    //   '/api': {
+    //     target: 'http://localhost:5000',
+    //     changeOrigin: true,
+    //     secure: false,
+    //   }
+    // }
   }
 }) 

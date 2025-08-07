@@ -15,6 +15,8 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
+import apiClient from '../config/axios';
+import { API_CONFIG } from '../config/api';
 import { OddsSource } from '../types/oddsSource';
 import OddsSourceModal from './OddsSourceModal';
 
@@ -34,12 +36,9 @@ const OddsSourcesList: React.FC<OddsSourcesListProps> = ({ onEdit, onDelete }) =
 
     const fetchSources = async () => {
         try {
-            const response = await fetch('/api/odds-sources');
-            if (!response.ok) {
-                throw new Error('Failed to fetch sources');
-            }
-            const data = await response.json();
-            setSources(data);
+            const response = await apiClient.get(API_CONFIG.ENDPOINTS.ODDS_SOURCES);
+            const sourcesData = response.data.data || response.data;
+            setSources(sourcesData);
         } catch (error) {
             console.error('Error fetching sources:', error);
         }
@@ -53,12 +52,7 @@ const OddsSourcesList: React.FC<OddsSourcesListProps> = ({ onEdit, onDelete }) =
     const handleDelete = async (id: number) => {
         if (window.confirm('Вы уверены, что хотите удалить этот источник?')) {
             try {
-                const response = await fetch(`/api/odds-sources/${id}`, {
-                    method: 'DELETE',
-                });
-                if (!response.ok) {
-                    throw new Error('Failed to delete source');
-                }
+                await apiClient.delete(`${API_CONFIG.ENDPOINTS.ODDS_SOURCES}/${id}`);
                 fetchSources();
                 if (onDelete) {
                     onDelete(id);
@@ -71,19 +65,10 @@ const OddsSourcesList: React.FC<OddsSourcesListProps> = ({ onEdit, onDelete }) =
 
     const handleSave = async (source: OddsSource) => {
         try {
-            const url = source.id ? `/api/odds-sources/${source.id}` : '/api/odds-sources';
-            const method = source.id ? 'PUT' : 'POST';
-            
-            const response = await fetch(url, {
-                method,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(source),
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to save source');
+            if (source.id) {
+                await apiClient.put(`${API_CONFIG.ENDPOINTS.ODDS_SOURCES}/${source.id}`, source);
+            } else {
+                await apiClient.post(API_CONFIG.ENDPOINTS.ODDS_SOURCES, source);
             }
 
             fetchSources();

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -6,11 +6,13 @@ import {
   DialogActions,
   Button,
   TextField,
+  Alert,
   Box,
   Typography,
-  Alert
+  Chip
 } from '@mui/material';
-import axios from 'axios';
+import apiClient from '../config/axios';
+import { API_CONFIG } from '../config/api';
 
 interface CreateSplitDialogProps {
   open: boolean;
@@ -33,6 +35,7 @@ const CreateSplitDialog: React.FC<CreateSplitDialogProps> = ({
   });
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -64,8 +67,8 @@ const CreateSplitDialog: React.FC<CreateSplitDialogProps> = ({
         throw new Error('Выберите хотя бы один матч');
       }
 
-      const response = await axios.post('/api/splits', {
-        ...formData,
+      const response = await apiClient.post(API_CONFIG.ENDPOINTS.SPLITS, {
+        name: formData.name,
         Kelly_value: Number(formData.Kelly_value),
         Bank: Number(formData.Bank),
         min_bet: Number(formData.min_bet),
@@ -82,11 +85,16 @@ const CreateSplitDialog: React.FC<CreateSplitDialogProps> = ({
           Bank: '',
           min_bet: ''
         });
+        setMessage({ type: 'success', text: 'Сплит успешно создан' });
+        setTimeout(() => {
+          setMessage(null);
+        }, 1500);
       } else {
         throw new Error(response.data.message || 'Ошибка при создании сплита');
       }
     } catch (err: any) {
       setError(err.message || 'Произошла ошибка при создании сплита');
+      setMessage({ type: 'error', text: err.message || 'Ошибка при создании сплита' });
     } finally {
       setLoading(false);
     }
@@ -144,6 +152,11 @@ const CreateSplitDialog: React.FC<CreateSplitDialogProps> = ({
             <Typography color="error" variant="body2">
               {error}
             </Typography>
+          )}
+          {message && (
+            <Alert severity={message.type} sx={{ mt: 2 }}>
+              {message.text}
+            </Alert>
           )}
         </Box>
       </DialogContent>

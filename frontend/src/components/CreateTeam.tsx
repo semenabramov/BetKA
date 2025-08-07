@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import {
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField,
   Button,
+  TextField,
   Alert,
   Box
 } from '@mui/material';
+import apiClient from '../config/axios';
+import { API_CONFIG } from '../config/api';
 
 interface CreateTeamProps {
   open: boolean;
@@ -40,20 +41,21 @@ const CreateTeam: React.FC<CreateTeamProps> = ({ open, onClose }) => {
     });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     try {
-      const response = await axios.post('/api/teams', teamData);
-      setMessage({ type: 'success', text: 'Команда успешно создана!' });
-      setTeamData({ name: '', league: 'Premier League' });
+      const requestData = {
+        name: teamData.name,
+        league: teamData.league
+      };
+      
+      const response = await apiClient.post(API_CONFIG.ENDPOINTS.TEAMS, requestData);
+      
+      setMessage({ type: 'success', text: 'Команда успешно создана' });
       setTimeout(() => {
         onClose();
-      }, 2000);
+      }, 1500);
     } catch (error) {
-      setMessage({ 
-        type: 'error', 
-        text: error instanceof Error ? error.message : 'Произошла ошибка при создании команды' 
-      });
+      setMessage({ type: 'error', text: 'Ошибка при создании команды' });
     }
   };
 

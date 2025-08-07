@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
+  Box,
+  Typography,
   Table,
   TableBody,
   TableCell,
@@ -7,11 +9,13 @@ import {
   TableHead,
   TableRow,
   Paper,
-  IconButton,
-  Typography,
+  CircularProgress,
+  Alert,
+  IconButton
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import axios from 'axios';
+import apiClient from '../config/axios';
+import { API_CONFIG } from '../config/api';
 
 interface AliasTeam {
   id: number;
@@ -23,13 +27,25 @@ interface AliasTeam {
 
 const AliasTeamList: React.FC = () => {
   const [aliases, setAliases] = useState<AliasTeam[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'info' as 'success' | 'error' | 'info' | 'warning'
+  });
 
   const fetchAliases = async () => {
     try {
-      const response = await axios.get('/api/teams/aliases');
+      setLoading(true);
+      const response = await apiClient.get(API_CONFIG.ENDPOINTS.ALIASES);
       setAliases(response.data);
-    } catch (error) {
-      console.error('Error fetching aliases:', error);
+      setError(null);
+    } catch (err) {
+      setError('Ошибка при загрузке алиасов команд');
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -40,10 +56,19 @@ const AliasTeamList: React.FC = () => {
   const handleDelete = async (id: number) => {
     if (window.confirm('Вы уверены, что хотите удалить этот алиас?')) {
       try {
-        await axios.delete(`/api/teams/aliases/${id}`);
+        await apiClient.delete(`${API_CONFIG.ENDPOINTS.ALIASES}/${id}`);
+        setSnackbar({
+          open: true,
+          message: 'Алиас успешно удален',
+          severity: 'success'
+        });
         fetchAliases();
       } catch (error) {
-        console.error('Error deleting alias:', error);
+        setSnackbar({
+          open: true,
+          message: 'Ошибка при удалении алиаса',
+          severity: 'error'
+        });
       }
     }
   };
@@ -60,23 +85,19 @@ const AliasTeamList: React.FC = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {aliases.map((alias) => (
-            <TableRow key={alias.id}>
-              <TableCell>{alias.team_name}</TableCell>
-              <TableCell>{alias.alias}</TableCell>
-              <TableCell>{alias.language}</TableCell>
-              <TableCell>
-                <IconButton
-                  onClick={() => handleDelete(alias.id)}
-                  color="error"
-                  size="small"
-                >
-                  <DeleteIcon />
-                </IconButton>
+          {loading ? (
+            <TableRow>
+              <TableCell colSpan={4} align="center">
+                <CircularProgress />
               </TableCell>
             </TableRow>
-          ))}
-          {aliases.length === 0 && (
+          ) : error ? (
+            <TableRow>
+              <TableCell colSpan={4} align="center">
+                <Alert severity="error">{error}</Alert>
+              </TableCell>
+            </TableRow>
+          ) : aliases.length === 0 ? (
             <TableRow>
               <TableCell colSpan={4} align="center">
                 <Typography variant="body2" color="textSecondary">
@@ -84,9 +105,35 @@ const AliasTeamList: React.FC = () => {
                 </Typography>
               </TableCell>
             </TableRow>
+          ) : (
+            aliases.map((alias) => (
+              <TableRow key={alias.id}>
+                <TableCell>{alias.team_name}</TableCell>
+                <TableCell>{alias.alias}</TableCell>
+                <TableCell>{alias.language}</TableCell>
+                <TableCell>
+                  <IconButton
+                    onClick={() => handleDelete(alias.id)}
+                    color="error"
+                    size="small"
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </TableCell>
+              </TableRow>
+            ))
           )}
         </TableBody>
       </Table>
+      {snackbar.open && (
+        <Alert
+          severity={snackbar.severity}
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          sx={{ mt: 2 }}
+        >
+          {snackbar.message}
+        </Alert>
+      )}
     </TableContainer>
   );
 };

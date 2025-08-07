@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import {
   Box,
-  Paper,
+  Typography,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Typography,
+  Paper,
   CircularProgress,
-  IconButton,
-  Tooltip,
-  Alert
+  Alert,
+  IconButton
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import axios from 'axios';
+import apiClient from '../config/axios';
+import { API_CONFIG } from '../config/api';
 
 interface Alias {
   id: number;
@@ -40,11 +40,18 @@ const TeamsList: React.FC = () => {
   useEffect(() => {
     const fetchTeams = async () => {
       try {
-        const response = await axios.get('/api/teams');
-        setTeams(response.data.data);
-        setLoading(false);
+        setLoading(true);
+        const response = await apiClient.get(API_CONFIG.ENDPOINTS.TEAMS);
+        console.log('API Response:', response.data);
+        // Проверяем структуру ответа
+        const teamsData = response.data.data || response.data;
+        console.log('Teams Data:', teamsData);
+        setTeams(teamsData);
+        setError(null);
       } catch (err) {
         setError('Ошибка при загрузке команд');
+        console.error(err);
+      } finally {
         setLoading(false);
       }
     };
@@ -55,7 +62,7 @@ const TeamsList: React.FC = () => {
   const handleDeleteTeam = async (teamId: number) => {
     if (window.confirm('Вы уверены, что хотите удалить эту команду?')) {
       try {
-        await axios.delete(`/api/teams/${teamId}`);
+        await apiClient.delete(`${API_CONFIG.ENDPOINTS.TEAMS}/${teamId}`);
         setTeams(teams.filter(team => team.id !== teamId));
         setMessage({ type: 'success', text: 'Команда успешно удалена' });
       } catch (err) {
@@ -100,7 +107,7 @@ const TeamsList: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {teams.map((team) => (
+            {Array.isArray(teams) && teams.map((team) => (
               <TableRow key={team.id}>
                 <TableCell>{team.name}</TableCell>
                 <TableCell>{team.league}</TableCell>
@@ -130,15 +137,13 @@ const TeamsList: React.FC = () => {
                   )}
                 </TableCell>
                 <TableCell align="center">
-                  <Tooltip title="Удалить команду">
-                    <IconButton onClick={() => handleDeleteTeam(team.id)}>
-                      <DeleteIcon />
-                    </IconButton>
-                  </Tooltip>
+                  <IconButton onClick={() => handleDeleteTeam(team.id)}>
+                    <DeleteIcon />
+                  </IconButton>
                 </TableCell>
               </TableRow>
             ))}
-            {teams.length === 0 && (
+            {(!Array.isArray(teams) || teams.length === 0) && (
               <TableRow>
                 <TableCell colSpan={4} align="center">
                   <Typography variant="body1" sx={{ py: 2 }}>

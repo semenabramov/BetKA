@@ -13,7 +13,8 @@ import {
   Alert
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import axios from 'axios';
+import apiClient from '../config/axios';
+import { API_CONFIG } from '../config/api';
 
 interface BookmakerModalProps {
   open: boolean;
@@ -80,9 +81,9 @@ const BookmakerModal: React.FC<BookmakerModalProps> = ({ open, onClose, bookmake
   const handleSubmit = async () => {
     try {
       if (bookmaker) {
-        await axios.put(`http://localhost:5000/api/bookmakers/${bookmaker.id}`, formData);
+        await apiClient.put(`${API_CONFIG.ENDPOINTS.BOOKMAKERS}/${bookmaker.id}`, formData);
       } else {
-        await axios.post('http://localhost:5000/api/bookmakers', formData);
+        await apiClient.post(API_CONFIG.ENDPOINTS.BOOKMAKERS, formData);
       }
       setMessage({ type: 'success', text: bookmaker ? 'Букмекер обновлен' : 'Букмекер добавлен' });
       setTimeout(() => {

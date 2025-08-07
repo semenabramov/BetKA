@@ -1,17 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import {
   Box,
-  Paper,
   Typography,
-  Chip,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  CircularProgress,
+  Alert,
   Accordion,
   AccordionSummary,
   AccordionDetails,
   Grid,
-  Divider
+  Divider,
+  Chip
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import axios from 'axios';
+import apiClient from '../config/axios';
+import { API_CONFIG } from '../config/api';
 
 interface Split {
   id: number;
@@ -32,14 +41,16 @@ const SplitsList: React.FC = () => {
   const fetchSplits = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/splits');
-      if (response.data.status === 'success') {
-        setSplits(response.data.data);
-      } else {
-        throw new Error(response.data.message || 'Ошибка при загрузке сплитов');
-      }
-    } catch (err: any) {
-      setError(err.message || 'Произошла ошибка при загрузке сплитов');
+      const response = await apiClient.get(API_CONFIG.ENDPOINTS.SPLITS);
+      console.log('Splits API Response:', response.data);
+      // Проверяем структуру ответа
+      const splitsData = response.data.data || response.data;
+      console.log('Splits Data:', splitsData);
+      setSplits(Array.isArray(splitsData) ? splitsData : []);
+      setError(null);
+    } catch (err) {
+      setError('Ошибка при загрузке сплитов');
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -101,7 +112,7 @@ const SplitsList: React.FC = () => {
         Сплиты
       </Typography>
 
-      {splits.length === 0 ? (
+      {!Array.isArray(splits) || splits.length === 0 ? (
         <Typography variant="body1" align="center" sx={{ py: 4 }}>
           Нет доступных сплитов
         </Typography>

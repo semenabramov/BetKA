@@ -17,7 +17,8 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
-import axios from 'axios';
+import apiClient from '../config/axios';
+import { API_CONFIG } from '../config/api';
 import BookmakerModal from './BookmakerModal';
 
 interface Bookmaker {
@@ -44,7 +45,7 @@ const BookmakersList: React.FC = () => {
 
   const fetchBookmakers = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/bookmakers');
+      const response = await apiClient.get(API_CONFIG.ENDPOINTS.BOOKMAKERS);
       setBookmakers(response.data.data);
     } catch (error) {
       setMessage({ type: 'error', text: 'Ошибка при загрузке списка букмекеров' });
@@ -69,7 +70,7 @@ const BookmakersList: React.FC = () => {
   const handleDelete = async (id: number) => {
     if (window.confirm('Вы уверены, что хотите удалить этого букмекера?')) {
       try {
-        await axios.delete(`http://localhost:5000/api/bookmakers/${id}`);
+        await apiClient.delete(`${API_CONFIG.ENDPOINTS.BOOKMAKERS}/${id}`);
         setMessage({ type: 'success', text: 'Букмекер успешно удален' });
         fetchBookmakers();
       } catch (error) {

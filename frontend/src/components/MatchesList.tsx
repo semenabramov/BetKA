@@ -30,7 +30,8 @@ import DownloadIcon from '@mui/icons-material/Download';
 import CompareIcon from '@mui/icons-material/Compare';
 import ScoreIcon from '@mui/icons-material/SportsSoccer';
 import { Add as AddIcon, ShowChart as ShowChartIcon } from '@mui/icons-material';
-import axios from 'axios';
+import apiClient from '../config/axios';
+import { API_CONFIG } from '../config/api';
 import CreateSplitDialog from './CreateSplitDialog';
 
 interface Match {
@@ -94,7 +95,7 @@ const MatchesList: React.FC = () => {
   const fetchMatches = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/matches');
+      const response = await apiClient.get(API_CONFIG.ENDPOINTS.MATCHES);
       setMatches(response.data);
       setError(null);
     } catch (err) {
@@ -123,24 +124,21 @@ const MatchesList: React.FC = () => {
   const handleUpdateMatches = async () => {
     try {
       setUpdateLoading(true);
-      const response = await axios.post('/api/matches/update');
+      const response = await apiClient.post(API_CONFIG.ENDPOINTS.UPDATE_MATCHES);
       
       setSnackbar({
         open: true,
-        message: response.data.message,
-        severity: response.data.status === 'success' ? 'success' : 'error'
+        message: 'Матчи успешно обновлены',
+        severity: 'success'
       });
       
-      if (response.data.status === 'success') {
-        fetchMatches();
-      }
-    } catch (err) {
+      fetchMatches();
+    } catch (error) {
       setSnackbar({
         open: true,
         message: 'Ошибка при обновлении матчей',
         severity: 'error'
       });
-      console.error(err);
     } finally {
       setUpdateLoading(false);
     }
@@ -149,20 +147,21 @@ const MatchesList: React.FC = () => {
   const handleParseAllMatches = async () => {
     try {
       setParseLoading(true);
-      const response = await axios.post('/api/matches/update-all');
+      const response = await apiClient.post(API_CONFIG.ENDPOINTS.UPDATE_ALL);
+      
       setSnackbar({
         open: true,
-        message: response.data.message || 'Матчи успешно спарсены и объединены',
+        message: 'Все матчи успешно обновлены',
         severity: 'success'
       });
-      await fetchMatches();
-    } catch (err) {
+      
+      fetchMatches();
+    } catch (error) {
       setSnackbar({
         open: true,
-        message: 'Ошибка при парсинге и объединении матчей',
+        message: 'Ошибка при обновлении всех матчей',
         severity: 'error'
       });
-      console.error('Error parsing and merging matches:', err);
     } finally {
       setParseLoading(false);
     }
@@ -171,20 +170,21 @@ const MatchesList: React.FC = () => {
   const handleUpdateAllScores = async () => {
     try {
       setUpdateScoresLoading(true);
-      const response = await axios.post('/api/matches/update-all-scores');
+      const response = await apiClient.post(API_CONFIG.ENDPOINTS.UPDATE_SCORES);
+      
       setSnackbar({
         open: true,
-        message: response.data.message || 'Счет матчей обновлен',
+        message: 'Счета матчей успешно обновлены',
         severity: 'success'
       });
-      await fetchMatches();
-    } catch (err) {
+      
+      fetchMatches();
+    } catch (error) {
       setSnackbar({
         open: true,
-        message: 'Ошибка при обновлении счета матчей',
+        message: 'Ошибка при обновлении счетов матчей',
         severity: 'error'
       });
-      console.error('Error updating match scores:', err);
     } finally {
       setUpdateScoresLoading(false);
     }
@@ -203,31 +203,26 @@ const MatchesList: React.FC = () => {
   };
 
   const handleDeleteConfirm = async () => {
-    if (!deleteDialog.matchId) return;
-    
-    try {
-      const response = await axios.delete(`/api/matches/${deleteDialog.matchId}`);
-      
-      setSnackbar({
-        open: true,
-        message: response.data.message,
-        severity: response.data.status === 'success' ? 'success' : 'error'
-      });
-      
-      // Обновляем список матчей после успешного удаления
-      if (response.data.status === 'success') {
+    if (deleteDialog.matchId) {
+      try {
+        await apiClient.delete(`${API_CONFIG.ENDPOINTS.MATCHES}/${deleteDialog.matchId}`);
+        
+        setSnackbar({
+          open: true,
+          message: 'Матч успешно удален',
+          severity: 'success'
+        });
+        
         fetchMatches();
+      } catch (error) {
+        setSnackbar({
+          open: true,
+          message: 'Ошибка при удалении матча',
+          severity: 'error'
+        });
       }
-    } catch (err) {
-      setSnackbar({
-        open: true,
-        message: 'Ошибка при удалении матча',
-        severity: 'error'
-      });
-      console.error(err);
-    } finally {
-      setDeleteDialog({ open: false, matchId: null, matchInfo: '' });
     }
+    setDeleteDialog({ open: false, matchId: null, matchInfo: '' });
   };
 
   const handleDeleteCancel = () => {
