@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: betka-backend
+    env: python
+    buildCommand: cd backend && pip install -r requirements.txt
+    startCommand: cd backend && gunicorn --bind 0.0.0.0:$PORT run:app
+    envVars:
+      - key: USE_SUPABASE
+        value: True
+      - key: DB_USER
+        value: semen
+      - key: DB_PASSWORD
+        value: 58b5WOGgBk88efEcjJhfuH11yxlHpmnd
+      - key: DB_HOST
+        value: dpg-d2ade47diees738tsl80-a.oregon-postgres.render.com
+      - key: DB_PORT
+        value: 5432
+      - key: DB_NAME
+        value: betka
+      - key: HOST
+        value: 0.0.0.0
+      - key: PORT
+        value: 5000
+      - key: DEBUG
+        value: False 
