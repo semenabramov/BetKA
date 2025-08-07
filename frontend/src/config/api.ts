@@ -1,13 +1,13 @@
 // Конфигурация API
 export const API_CONFIG = {
   // Базовый URL для API
-  BASE_URL: 'https://betka.onrender.com',
+  BASE_URL: 'http://localhost:5000',
   
   // Для локальной разработки используйте:
   // BASE_URL: 'http://localhost:5000',
   
   // Таймаут для запросов (в миллисекундах)
-  TIMEOUT: 10000,
+  TIMEOUT: 100000,
   
   // Эндпоинты API
   ENDPOINTS: {
