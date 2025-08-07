@@ -7,7 +7,7 @@ class SplitMatch(db.Model):
     split_id = db.Column(db.Integer, db.ForeignKey('Splits.id'), nullable=False)
     match_id = db.Column(db.Integer, db.ForeignKey('Matches.id'), nullable=False)
     bookmaker_id = db.Column(db.Integer, db.ForeignKey('bookmakers.id'), nullable=False)
-    selected_outcome = db.Column(db.Enum('home', 'draw', 'away'))
+    selected_outcome = db.Column(db.String(10), check_constraint="selected_outcome IN ('home', 'draw', 'away')")
     odds_value = db.Column(db.Float)
     is_success = db.Column(db.Boolean)
     notes = db.Column(db.Text)

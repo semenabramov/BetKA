@@ -1,11 +1,15 @@
+#!/usr/bin/env python3
+"""
+Файл для запуска Flask приложения
+"""
+
 from app import create_app
-from app.core.config import Config
 
 app = create_app()
 
 if __name__ == '__main__':
     app.run(
-        host=Config.HOST,
-        port=Config.PORT,
-        debug=Config.DEBUG
+        host=app.config['HOST'],
+        port=app.config['PORT'],
+        debug=app.config['DEBUG']
     ) 

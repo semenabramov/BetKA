@@ -6,7 +6,7 @@ class AliasTeam(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     id_team = db.Column(db.Integer, db.ForeignKey('teams.id', ondelete='CASCADE'), nullable=False)
     alias_name = db.Column(db.String(255), nullable=False)
-    language = db.Column(db.Enum('ru', 'en', name='language_enum'), default='ru')
+    language = db.Column(db.String(2), default='ru', check_constraint="language IN ('ru', 'en')")
     
     # Связь с моделью Team
     team = db.relationship('Team', backref=db.backref('aliases', lazy=True, cascade='all, delete-orphan'))

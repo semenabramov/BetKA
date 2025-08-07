@@ -9,7 +9,7 @@ class Split(db.Model):
     Kelly_value = db.Column(db.Float)
     Bank = db.Column(db.Float)
     min_bet = db.Column(db.Float)
-    status = db.Column(db.Enum('active', 'completed', 'archived'))
+    status = db.Column(db.String(20), default='active', check_constraint="status IN ('active', 'completed', 'archived')")
     
     # Связи
     matches = db.relationship('Match', backref='split_info', lazy=True)
