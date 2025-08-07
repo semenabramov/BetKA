@@ -24,7 +24,7 @@ class Config:
     # Формируем строку подключения для SQLAlchemy
     if USE_SUPABASE:
         # Подключение к Supabase через PostgreSQL
-        SQLALCHEMY_DATABASE_URI = f"postgresql+psycopg2://{SUPABASE_USER}:{SUPABASE_PASSWORD}@{SUPABASE_HOST}:{SUPABASE_PORT}/{SUPABASE_DB}?sslmode=require"
+        SQLALCHEMY_DATABASE_URI = 'postgresql://semen:58b5WOGgBk88efEcjJhfuH11yxlHpmnd@dpg-d2ade47diees738tsl80-a.oregon-postgres.render.com/betka'
     else:
         # Подключение к локальной PostgreSQL
         SQLALCHEMY_DATABASE_URI = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
