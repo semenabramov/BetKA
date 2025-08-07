@@ -2,8 +2,9 @@ services:
   - type: web
     name: betka-backend
     env: python
-    buildCommand: cd backend && pip install -r requirements.txt
-    startCommand: cd backend && gunicorn --bind 0.0.0.0:$PORT run:app
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn run:app
     envVars:
       - key: USE_SUPABASE
         value: True
