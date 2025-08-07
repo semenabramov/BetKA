@@ -15,11 +15,11 @@ class Config:
     DB_NAME = os.getenv('DB_NAME', 'betka')
     
     # Настройки Supabase (PostgreSQL connection)
-    SUPABASE_USER = os.getenv('SUPABASE_USER', 'postgres')
-    SUPABASE_PASSWORD = os.getenv('SUPABASE_PASSWORD', '5yqbCzz9W2KKsNNF')
-    SUPABASE_HOST = os.getenv('SUPABASE_HOST', 'db.tihxefzgynuvqaocfdui.supabase.co')
-    SUPABASE_PORT = os.getenv('SUPABASE_PORT', '5432')
-    SUPABASE_DB = os.getenv('SUPABASE_DB', 'postgres')
+    # SUPABASE_USER = os.getenv('SUPABASE_USER', 'postgres')
+    # SUPABASE_PASSWORD = os.getenv('SUPABASE_PASSWORD', '5yqbCzz9W2KKsNNF')
+    # SUPABASE_HOST = os.getenv('SUPABASE_HOST', 'db.tihxefzgynuvqaocfdui.supabase.co')
+    # SUPABASE_PORT = os.getenv('SUPABASE_PORT', '5432')
+    # SUPABASE_DB = os.getenv('SUPABASE_DB', 'postgres')
      
     # Формируем строку подключения для SQLAlchemy
     if USE_SUPABASE:
