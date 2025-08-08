@@ -1,7 +1,7 @@
 // Конфигурация API
 export const API_CONFIG = {
   // Базовый URL для API
-  BASE_URL: 'http://localhost:5000',
+  BASE_URL: 'https://betka.onrender.com',
   
   // Для локальной разработки используйте:
   // BASE_URL: 'http://localhost:5000',
