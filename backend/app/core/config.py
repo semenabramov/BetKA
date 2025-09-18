@@ -5,7 +5,7 @@ load_dotenv()
 
 class Config:
     # Константа для переключения между локальной БД и Supabase
-    USE_SUPABASE = os.getenv('USE_SUPABASE', 'True').lower() == 'true'
+    USE_SUPABASE = os.getenv('USE_SUPABASE', 'false').lower() == 'true'
     
     # Настройки локальной базы данных PostgreSQL
     DB_USER = os.getenv('DB_USER', 'postgres')
@@ -33,4 +33,8 @@ class Config:
     # Настройки сервера
     HOST = os.getenv('HOST', '0.0.0.0')
     PORT = int(os.getenv('PORT', 5000))
-    DEBUG = os.getenv('DEBUG', 'True').lower() == 'true' 
+    DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
+    
+    # Настройки таймаута для долгих операций
+    REQUEST_TIMEOUT = int(os.getenv('REQUEST_TIMEOUT', 300))  # 5 минут
+    SEND_FILE_MAX_AGE_DEFAULT = 0 

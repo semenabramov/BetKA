@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from app.core.database import db
 from app.models.odds_source import OddsSource
 from app.models.match import Match
@@ -23,6 +23,50 @@ import time
 logger = logging.getLogger(__name__)
 
 class ParserService:
+    @staticmethod
+    def _parse_relative_date(date_time_str):
+        """
+        Преобразует относительные даты типа "Завтра 22:00" или "Сегодня 22:00" в абсолютную дату
+        
+        Args:
+            date_time_str (str): Строка с относительной датой и временем
+            
+        Returns:
+            tuple: (date_str, time_str) или None если не удалось распарсить
+        """
+        try:
+            # Приводим к нижнему регистру для унификации
+            date_time_lower = date_time_str.lower().strip()
+            
+            # Получаем текущую дату
+            today = datetime.now()
+            
+            # Обрабатываем "сегодня"
+            if date_time_lower.startswith('сегодня'):
+                time_part = date_time_lower.replace('сегодня', '').strip()
+                if time_part:
+                    return today.strftime('%d.%m.%Y'), time_part
+            
+            # Обрабатываем "завтра"
+            elif date_time_lower.startswith('завтра'):
+                time_part = date_time_lower.replace('завтра', '').strip()
+                if time_part:
+                    tomorrow = today + timedelta(days=1)
+                    return tomorrow.strftime('%d.%m.%Y'), time_part
+            
+            # Обрабатываем "послезавтра"
+            elif date_time_lower.startswith('послезавтра'):
+                time_part = date_time_lower.replace('послезавтра', '').strip()
+                if time_part:
+                    day_after_tomorrow = today + timedelta(days=2)
+                    return day_after_tomorrow.strftime('%d.%m.%Y'), time_part
+            
+            # Если это не относительная дата, возвращаем None
+            return None
+            
+        except Exception as e:
+            logger.warning(f"Ошибка при парсинге относительной даты '{date_time_str}': {str(e)}")
+            return None
     @staticmethod
     def parse_matches_from_source(source_id=None):
         """
@@ -414,19 +458,26 @@ class ParserService:
                         date_time_elem = card.select_one(".header-left__time, .event-date, .match-date, .date")
                         if date_time_elem:
                             date_time = date_time_elem.text.strip()
-                            # Пытаемся разделить дату и время
-                            try:
-                                date_str, time_str = date_time.split(" ", 1)
-                            except ValueError:
-                                # Если не удалось разделить, пробуем другие селекторы
-                                date_element = card.select_one(".event-date, .match-date, .date")
-                                time_element = card.select_one(".event-time, .match-time, .time")
-                                
-                                if not date_element or not time_element:
-                                    continue
+                            
+                            # Сначала проверяем, не является ли это относительной датой
+                            relative_result = ParserService._parse_relative_date(date_time)
+                            if relative_result:
+                                date_str, time_str = relative_result
+                                logger.info(f"Обработана относительная дата: '{date_time}' -> '{date_str} {time_str}'")
+                            else:
+                                # Пытаемся разделить дату и время
+                                try:
+                                    date_str, time_str = date_time.split(" ", 1)
+                                except ValueError:
+                                    # Если не удалось разделить, пробуем другие селекторы
+                                    date_element = card.select_one(".event-date, .match-date, .date")
+                                    time_element = card.select_one(".event-time, .match-time, .time")
                                     
-                                date_str = date_element.text.strip()
-                                time_str = time_element.text.strip()
+                                    if not date_element or not time_element:
+                                        continue
+                                        
+                                    date_str = date_element.text.strip()
+                                    time_str = time_element.text.strip()
                         else:
                             # Пробуем альтернативные селекторы
                             date_element = card.select_one(".event-date, .match-date, .date")
