@@ -105,6 +105,10 @@ class MatchService:
             
         result = match.to_dict()
         
+        # Добавляем информацию о лиге (берем лигу домашней команды)
+        if match.home_team:
+            result['league'] = match.home_team.league
+        
         # Добавляем коэффициенты от букмекеров с их названиями
         result['bookmaker_odds'] = []
         for odd in match.bookmaker_odds:

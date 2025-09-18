@@ -44,6 +44,7 @@ interface Match {
     team_away: number;
     home_team_name: string;
     away_team_name: string;
+    league?: string; // Added for league display
     bookmaker_odds: Array<{
         bookmaker_id: number;
         bookmaker_name?: string;
@@ -252,6 +253,7 @@ const MatchesList: React.FC = () => {
             "Дата",
             "Домашняя команда",
             "Гостевая команда",
+            "Лига",
             "Счет",
             "Коэффициенты источников (П1)",
             "Коэффициенты источников (X)",
@@ -329,6 +331,7 @@ const MatchesList: React.FC = () => {
                 formatDate(match.date),
                 `"${match.home_team_name}"`,
                 `"${match.away_team_name}"`,
+                `"${match.league || "-"}"`,
                 `"${match.match_score || "-"}"`,
                 `"${sourceOddsHome}"`,
                 `"${sourceOddsDraw}"`,
@@ -557,7 +560,7 @@ const MatchesList: React.FC = () => {
                             <TableCell align="center">X</TableCell>
                             <TableCell align="center">П2</TableCell>
                             <TableCell align="center">Счет</TableCell>
-                            <TableCell align="center">Действия</TableCell>
+                            <TableCell>Лига</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -607,23 +610,10 @@ const MatchesList: React.FC = () => {
                                 <TableCell align="center">
                                     {getScoreDisplay(match)}
                                 </TableCell>
-                                <TableCell align="center">
-                                    <Tooltip title="Удалить матч">
-                                        <IconButton
-                                            color="error"
-                                            size="small"
-                                            onClick={() =>
-                                                handleDeleteClick(
-                                                    match.id,
-                                                    match.home_team_name,
-                                                    match.away_team_name,
-                                                    match.date
-                                                )
-                                            }
-                                        >
-                                            <DeleteIcon />
-                                        </IconButton>
-                                    </Tooltip>
+                                <TableCell>
+                                    <Typography variant="body2">
+                                        {match.league || "-"}
+                                    </Typography>
                                 </TableCell>
                             </TableRow>
                         ))}
