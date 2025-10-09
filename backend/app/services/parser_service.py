@@ -3,6 +3,8 @@ from bs4 import BeautifulSoup
 import json
 import logging
 from datetime import datetime, timedelta
+from urllib.request import Request, urlopen
+import gzip
 from app.core.database import db
 from app.models.odds_source import OddsSource
 from app.models.match import Match
@@ -248,12 +250,27 @@ class ParserService:
         matches = []
         
         try:
-            # Получаем HTML страницы
-            response = requests.get(url, timeout=10)
-            response.raise_for_status()
+            # Получаем HTML страницы используя urllib (он обходит защиту)
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
+                'Accept-Encoding': 'gzip, deflate',
+                'Connection': 'keep-alive',
+            }
+            
+            req = Request(url, headers=headers)
+            response = urlopen(req, timeout=15)
+            data = response.read()
+            
+            # Проверяем, сжат ли ответ gzip
+            if response.headers.get('Content-Encoding') == 'gzip':
+                data = gzip.decompress(data)
+            
+            html = data.decode('utf-8')
             
             # Парсим HTML
-            soup = BeautifulSoup(response.text, 'html.parser')
+            soup = BeautifulSoup(html, 'html.parser')
             
             # Находим все карточки матчей
             match_cards = soup.select('.card_new')

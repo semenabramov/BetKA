@@ -9,6 +9,6 @@ def init_db(app):
     
     # Выводим информацию о подключении
     if Config.USE_SUPABASE:
-        print("✅ Connected to Supabase via SQLAlchemy")
+        print("[OK] Connected to Supabase via SQLAlchemy")
     else:
-        print("✅ Connected to local PostgreSQL via SQLAlchemy") 
+        print("[OK] Connected to local PostgreSQL via SQLAlchemy") 
